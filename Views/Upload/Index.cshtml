@@ -1,0 +1,966 @@
+﻿@model PKT.Models.Upload
+ 
+@{
+ViewData["Title"] = "Upload";
+Layout = "_Layout";
+ 
+}
+
+
+
+    <head>
+    <link href="~/lib/semanticui/semantic.min.css" rel="stylesheet" />
+    <link href="~/lib/datatables/jquery.datatables.css" rel="stylesheet" />
+    <script src="~/lib/jquery/dist/jquery.min.map"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/datatables/jquery.datatables.js"></script>
+    <script src="~/js/dynamic-table-json-1.3.js"></script>
+
+    <script src="~/js/notify.js"></script>
+    <script src="~/js/notify.min.js"></script>
+
+    <script src="~/lib/semanticui/semantic.min.js"></script>
+    <link href="~/iconpack/icon.css" rel="stylesheet" />
+    <link href="~/iconpack/icon.min.css" rel="stylesheet" />
+    <script src="~/iconpack/package.js"></script>
+
+    <style>
+        #TempTable1 td, #TempTable1 th,
+        #TempTable2 td, #TempTable2 th {
+            padding: 5px !important;
+            font-size: 12.5px;
+        }
+  
+
+ </style>
+
+
+    <style>
+        /* Custom CSS to add margin between items */
+
+        .field  {
+        padding: 2px !important;
+        border-radius: 5px !important;
+        font-weight: bold;
+    }
+
+        .field:hover {
+        padding: 2px !important;
+        background-color: #ebe5f8 !important;
+        border-radius: 5px !important;
+            font-weight: bold;
+    }
+
+
+        #questionList .item {
+            margin-bottom: 10px; /* Adjust as needed */
+        }
+
+        .clickable {
+            padding: 7px !important;
+            border-radius: 5px !important;
+         }
+
+        .clickable:hover {
+            padding: 7px !important;
+            background-color: #ebe5f8 !important;
+            border-radius: 5px !important;
+            font-weight: bold;
+        }
+
+    </style>
+
+     <style>
+
+        body {
+            background-image: url('http://10.1.10.26:952/ServerMonitor/input/Files/PKTbg.svg');
+            background-size: cover; /* Adjusts the size to cover the whole background */
+            }
+
+    </style>
+
+    </head>
+
+    <br />
+   
+
+<div class="ui container">
+
+    <div class="ui basic modal">
+  <div class="ui icon header">
+            <i class="upload icon"></i> Upload Instructions
+ 
+  </div>
+  <div class="content">
+
+            <div class="ui list">
+                <div class="item">
+                    <i class="right triangle icon"></i>
+                    <div class="content">Please download the Sample File and Add the questions and options in their respective columns, also Do not add or delete any columns.</div>
+                </div>
+                <br />
+                <div class="item">
+                    <i class="right triangle icon"></i>
+                    <div class="content">Do not use comma values in the questions and options. Instead, use spaces or full stops for separation.</div>
+                </div>
+                <br />
+                <div class="item">
+                    <i class="right triangle icon"></i>
+                    <div class="content">Each question can have up to 5 options. Provide the correct answer in the Answer Column. Do not repeat the answer value in any other option column because the system will automatically shuffle the questions and options for the users.</div>
+                </div>
+                <br />
+                <div class="item">
+                    <i class="right triangle icon"></i>
+                    <div class="content">Select the valid Cost Name and Test Name on the upload page, then click the Upload button.</div>
+                </div>
+                <br />
+                <div class="item">
+                    <i class="right triangle icon"></i>
+                    <div class="content">You can view the uploaded details once the file has been uploaded. You can also edit the Question and Answers once the uploaded details have been displayed.</div>
+                </div>
+            </div>
+        </div>
+  <div class="actions">
+    <div class="ui red basic cancel inverted button">
+      <i class="remove icon"></i>
+      Dislike
+    </div>
+    <div class="ui green ok inverted button">
+      <i class="like icon"></i>
+    Like    
+    </div>
+  </div>
+</div>
+
+ 
+
+
+<form id="uploadForm" method="post" class="d-flex" enctype="multipart/form-data">
+ 
+    <div class="ui form segment violet" id="PKTDetailsDiv">
+        <a class="ui violet ribbon label large ">Questions Upload</a>
+        <br />
+        <br />
+
+        <div class="fields">
+
+                <div class="field" >
+                <label>.</label>
+
+                    <a class="ui labeled green icon button" download href="~/Sample/PKT_Question_Base.csv">
+  <i class="download icon"></i>
+  Sample 
+</a>
+ 
+            </div>
+
+
+                <div class="field">
+                    <label>Cost Name</label>
+
+
+                    <select id="CostNameDropdown" onchange="getTestNamesReports();">
+                        <option value="">Select one...</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>PKT Name</label>
+
+
+                    <select id="PKTCodeDropdown" >
+                        <option value="">Select one...</option>
+                    </select>
+                </div>
+
+         
+            
+            <div class="field">
+                <label>File</label>
+                    <input class="ui label" type="file" style="font-size:11px" id="fileInput" />
+            </div>
+
+            <div class="field">
+                <label> .</label>
+                <div class="ui multiple ">
+                        <button class="ui violet button" id="uploadFile" >Upload</button>
+                </div>
+            </div>
+            
+            <div class="field">
+                 <label> .</label>
+                    <div class="ui labeled green button" tabindex="0" onclick="$('.ui.basic.modal').modal('show');">
+                        <div class="ui green button ">
+                            <i class="upload icon"></i>
+                        </div>
+                        <a class="ui basic green left pointing label">Instructions</a>
+                    </div>
+                    
+            </div>
+        </div>
+    </div>
+
+        <div class="ui segment" id="DivUploadRecords">
+              <a class="ui violet ribbon label large ">Uploaded Records</a>
+
+            <div id="DivTempTable2" style="overflow: auto; "></div>
+
+        </div>
+
+
+</form>
+
+<br />
+
+    <div class="ui segment" id="DivTestRecords" style="display:none;">
+     <a class="ui violet ribbon label large ">Test Records</a>
+
+    <div id="DivTempTable1" style="overflow: auto; "></div>
+
+</div>
+
+
+
+    <div class="ui modal " id="TestHistoryModal">
+        <div class="header">Test History</div>
+        <i class="close icon"></i>
+
+        <div id="DivTempTable3" style="overflow: auto;padding: 3%; "></div>
+
+    </div>
+
+ 
+
+    <div class="ui modal fullscreen" id="questionsModal">
+        <div class="header">Questions</div>
+        <i class="close icon"></i>
+        <div class="content">
+            <div class="ui list" id="questionList"></div>
+        </div>
+    </div>
+
+    <div class="ui modal" id="editQuestionModal">
+        <div class="header">Question Editor</div>
+        <i class="close icon" onclick="  $('#editQuestionModal').modal('hide'); $('#questionsModal').modal({ closable: false }).modal('show');"></i>
+        <div class="content">
+            <div class="ui form" id="questionForm"></div>
+        </div>
+    </div>
+
+
+</div>
+ 
+
+    @section scripts {
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            CostCodeList();
+        });
+
+        function CostCodeList() {
+            Get_Dropdowns(function (data) {
+                var selectElement = $("#CostNameDropdown");
+                selectElement.empty();
+
+                    selectElement.append(
+                    $('<option></option>').text('Please select').attr('value', '0')
+                );
+
+                if (data.length > 0) {
+                    $.each(data, function (index, item) {
+                        selectElement.append(
+                            $('<option></option>').attr('value', item.CODE).text(item.NAME)
+                        );
+                    });
+
+
+                }
+
+            
+
+                  $("#CostNameDropdown").val(0);
+
+
+            }, "PKT_CostName", 0);
+        }
+
+        function PKTCodeList(Id) {
+            Get_Dropdowns(function (data) {
+                var selectElement = $("#PKTCodeDropdown");
+                selectElement.empty();
+                if (data.length > 0) {
+                    $.each(data, function (index, item) {
+                        selectElement.append(
+                            $('<option></option>').attr('value', item.CODE).text(item.CODE)
+                        );
+                    });
+
+                }
+                selectElement.append(
+                    $('<option></option>').text('Please select').attr('value', '0')
+                );
+
+
+                $("#PKTCodeDropdown").val(0);
+
+
+            }, "PKT_BaseList", Id);
+        }
+
+        function Get_Dropdowns(callback, Criteria, Id) {
+            $.ajax({
+                url: '@Url.Action("get_dropdown_list", "Upload")',
+                type: 'GET',
+                dataType: 'json',
+                data: { Id: Id, Criteria: Criteria },
+                success: function (data) {
+                    callback(data.Table);
+                },
+                error: function () {
+                    console.log('Error fetching data');
+                }
+            });
+        }
+
+
+
+        $(document).ready(function () {
+            var costNameDropdown = $('#CostNameDropdown');
+            costNameDropdown.change(function () {
+                var selectedValue = $(this).val();
+                if (selectedValue !== '0') {
+
+                    $("#DivUploadRecords").hide('fade');
+                    $("#DivTestRecords").show('fade');
+                    PKTCodeList(selectedValue);
+                } else {
+                    $("#DivTestRecords").hide('fade');
+                    $("#DivUploadRecords").show('fade');
+                }
+            });
+        });
+
+
+
+        $(document).ready(function () {
+            $('#uploadFile').click(function (e) {
+                e.preventDefault();
+
+                $('.spinner').css('display', 'block').fadeIn();
+
+                var fileInput = $('#fileInput')[0];
+                var postedFile = fileInput.files[0];
+                var CostCode = $('#CostNameDropdown').val();
+                var PKTNameValue = $('#PKTCodeDropdown').val();
+                var PKTName = $('#PKTCodeDropdown').find(":selected").text();
+
+
+
+                if (CostCode == null || CostCode == '' || CostCode == '0') {
+                    $.notify("Please select Cost Name", "error");
+                    $("#CostNameDropdown").focus();
+                    return;
+                }
+
+
+                if (PKTNameValue == null || PKTNameValue == '' || PKTNameValue == '0') {
+                    $.notify("Please select Cost Name", "error");
+                    $("#PKTCodeDropdown").focus();
+                    return;
+                }
+
+
+                if (!postedFile) {
+                     $.notify("Please select a file to upload", "error");
+                    $('.spinner').css('display', 'block').fadeOut();
+                    return;
+                }
+
+
+                var formData = new FormData();
+                formData.append('postedFile', postedFile);
+                formData.append('CostCode', CostCode);
+                formData.append('PKTName', PKTName);
+
+
+                $.ajax({
+                    url: '@Url.Action("Base_Uploads", "Upload")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        if (result.status === "success") {
+
+                            $.notify(result.msg, "success");
+                            
+                             $(document).ready(function () {
+                                setTimeout(function () {
+                                    getTestNamesReports()
+
+                                     formData = new FormData();
+                                    $("#CostNameDropdown").trigger('change');
+                                    $('#CostNameDropdown').val(0);
+                                    $('#PKTCodeDropdown').val(0);
+                                    $('#fileInput').val('');
+
+                                }, 500);
+                            });
+
+                           
+
+                        } else {
+                            $.notify(result.msg, "error");
+                        }
+                        $('.spinner').css('display', 'block').fadeOut();
+                    },
+                    error: function (result) {
+                        $.notify(result.msg, "error");
+                        $('.spinner').css('display', 'block').fadeOut();
+                    }
+                });
+            });
+        });
+
+
+        </script>
+
+
+
+
+    <script>
+
+        function getTestNamesReports() {
+
+            $('#TempTable1').DataTable().destroy();
+
+            var CostId = $('#CostNameDropdown').val();
+            var TestName = $('#PKTCodeDropdown').val();
+ 
+            $.ajax({
+                url: '@Url.Action("Get_Reports", "Upload")',
+                type: "POST",
+                data: { CostId: CostId, TestName: TestName },
+                success: function (result) {
+
+                    if (result != null) {
+                        if (result != undefined && result.status == "success") {
+
+                            if (Object(result).length === 0) {
+                                $.notify("No Records Available", "error");
+                                $('.spinner').css('display', 'block').fadeOut();
+                                return;
+                            }
+
+                            var History = `<div class='ui icon label' data-inverted="" data-tooltip="Click to view the History!" data-position="top left"  onclick="getTestNamesEditHistory('{{td}}')" id='{{td}}' > <i class="history icon"></i>  </div>`;
+                            var Edit = `<div class='ui icon label' data-inverted="" data-tooltip="Click to Edit the Questions!" data-position="top left"  onclick="Get_Question('{{td}}')" >  {{td}}</div>`;
+                            var Duration = `<div class='ui icon label' data-inverted=""   contenteditable = "true" data-tooltip="Click to Edit the Durations!" oninput="handleInput(this)"  onblur="handleBlur(this)"  data-position="top left" >  {{td}} </div>`;
+            
+
+                            var ActiveStatus = {
+                                'Active': ` <a onclick='Update_ActiveStatus(this)' class='ui green label tiny' id="{{td}}"> {{td}}  </a>`,
+                                'inActive':` <a onclick='Update_ActiveStatus(this)' class='ui red label tiny' id="{{td}}"> {{td}}  </a>`,
+                            };
+
+                            DynamicTable.renderTable({
+                                jsonData: result.data,
+                                targetElementId: 'DivTempTable1',
+                                tableClasses: ["ui", "selectable","table"],
+                                columnModifiers: [
+                                    ["1", History],
+                                    ["2", Edit] ,
+                                    ["5", Duration],
+                                    ["8", ActiveStatus]
+                                ],
+                                StaticHeader:false,
+                          
+                            });
+
+
+                            $('#TempTable1').DataTable({
+                                "lengthMenu": [ 10, 50],
+                                "searching": true,
+                                "ordering": true
+                            });
+ 
+                            return;
+
+                        } else {
+                            $.notify(result.msg, "error");
+                            return;
+                        }
+                    } else if (result.status == "error") {
+                        $.notify(result.mod.msg, "error");
+                        return;
+                    } else {
+                          $.notify("Something went wrong", "error");
+                        return;
+                    }
+                }, failure: function (result) {
+                      $.notify(result.responseText, "error");
+                    return;
+                },
+                error: function (result) {
+                     $.notify(result.responseText, "error");
+                    return;
+                }
+            });
+        }
+  
+
+        function get_Question_ById(){
+
+            var TestName = $('#PKTCodeDropdown option:selected').text();
+      
+        var QuestionsUrl = '@Url.Content("~/resource/questions.json")';
+
+            $.ajax({
+            type: "POST",
+            url: "@Url.Action("Get_Questions", "Questioner")",
+            data: { TestName: TestName },
+            success: function (data) {
+                     displayQuestions(data.questions);
+                }
+            });
+        }
+
+
+        function Get_Question(TestName) {
+
+            var QuestionsUrl = '@Url.Content("~/resource/questions.json")';
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Get_Questions", "Questioner")",
+                data: { TestName: TestName, ForType: "QuestionEdits" },
+                success: function (data) {
+                    displayQuestions(data.questions);
+                }
+            });
+
+            $('#questionsModal').modal({ closable: false }).modal('show');
+        }
+ 
+ 
+
+        function displayQuestions(data) {
+            const questionsObject = JSON.parse(data);
+            const questionsArray = questionsObject.questions;
+
+            const questions = questionsArray;
+            const questionList = $('#questionList');
+            questionList.empty();
+
+            questions.forEach((question, index) => {
+                const listItem = $('<div class="item clickable"></div>')
+                    .text(`${index + 1}. ${question.question}`)
+                    .attr('data-question-id', question.id)
+                    .appendTo(questionList);
+
+                listItem.click(function () {
+                    const questionId = $(this).attr('data-question-id');
+                    const selectedQuestion = questions.find(q => q.id == questionId);
+                    displayEditQuestionModal(selectedQuestion);
+                });
+            });
+        }
+
+        function displayEditQuestionModal(question) {
+            const questionForm = $('#questionForm');
+            questionForm.empty();
+
+            const questionInput = $(`
+            <div class="inline field">
+              <div class="ui right pointing red label"> Question </div>
+              <input style="width:90%" class="question-input" value="${question.question}">
+            </div>`
+            ).appendTo(questionForm);
+
+
+            const options = question.options;
+
+
+
+            for (let i = 0; i < 5; i++) {
+                if (i < options.length) {
+                    const optionText = options[i].text;
+                    const optionId = options[i].id;
+
+                    if (i === 0) {
+                        const optionInput = $(`
+                        <div class="inline field">
+                            <div class="ui right pointing green label"> Answer : </div>
+                                    <input class="option-input" style="width:90%" data-Id="${optionId}" value="${optionText}">
+                        </div>`
+                        ).appendTo(questionForm);
+                    } else {
+                        const optionInput = $(`
+                        <div class="inline field">
+                            <div class="ui right pointing label"> Option ${i + 1} </div>
+                                    <input class="option-input" style="width:90%" data-Id="${optionId}" value="${optionText}">
+                        </div>`
+                        ).appendTo(questionForm);
+                    }
+                } else {
+                    const optionInput = $(`
+                    <div class="inline field">
+                        <div class="ui right pointing label"> Option ${i + 1} </div>
+                        <input class="option-input" style="width:90%" value="">
+                    </div>`
+                    ).appendTo(questionForm);
+                }
+
+            }
+ 
+
+            const activeStatus = $(`
+
+              <div class="inline two fields">
+                    <div class="inline field">
+                        <div class="ui right pointing blue  label"> Marks : </div>
+                        <input class="option-input QuestionMarks" style="width:80%" value="${question.Marks}" >
+                    </div>
+
+                      <div class="inline field">
+                              <div class="ui right pointing blue  label">Q Status :</div>
+                      <select class="ui dropdown activeStatus" style="width:80%">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                      </select>
+                    </div>
+
+               </div>
+
+            `
+            ).appendTo(questionForm);
+
+            const updateButton = $('<button class="ui button positive">Update</button>').appendTo(questionForm);
+   
+            updateButton.click(function () {
+                const updatedQuestion = questionInput.find('.question-input').val();
+                const QuestionMarks = $('.QuestionMarks').val();
+                const updatedactiveStatus = $('.activeStatus').val();
+ 
+                const updatedOptions = questionForm.find('.option-input').map(function () {
+                const optionId = $(this).attr('data-id');
+                const optionValue = $(this).val();
+                return { id: optionId, value: optionValue };
+            }).get();
+
+                 updateContent(question.id, updatedQuestion, updatedactiveStatus,QuestionMarks, updatedOptions);
+
+                $('#editQuestionModal').modal('hide');
+                $('#questionsModal').modal({ closable: false }).modal('show');
+            });
+ 
+
+            $('#editQuestionModal').modal({ closable: false }).modal('show');
+        }
+
+      
+        displayQuestions();
+
+
+
+        function updateContent(questionId, updatedQuestion, updatedactiveStatus,QuestionMarks, updatedOptions) {
+
+            console.log(questionId, updatedQuestion, updatedactiveStatus,QuestionMarks, updatedOptions);
+
+            var QuestionId = questionId;
+            var Question = updatedQuestion;
+            var Option1 = updatedOptions[0].value;
+            var Option1Id = updatedOptions[0].id;
+            var Option2 = updatedOptions[1].value;
+            var Option2Id = updatedOptions[1].id;
+            var Option3 = updatedOptions[2].value;
+            var Option3Id = updatedOptions[2].id;
+            var Option4 = updatedOptions[3].value;
+            var Option4Id = updatedOptions[3].id;
+            var Option5 = updatedOptions[4].value;
+            var Option5Id = updatedOptions[4].id;
+
+            var Status = updatedactiveStatus;
+            var Marks = QuestionMarks;
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("UpdateQuestions", "Questioner")",
+                data: {
+                    QuestionId: QuestionId,
+                    Question: Question,
+                    Option1: Option1,
+                    Option1Id: Option1Id,
+                    Option2: Option2,
+                    Option2Id: Option2Id,
+                    Option3: Option3,
+                    Option3Id: Option3Id,
+                    Option4: Option4,
+                    Option4Id: Option4Id,
+                    Option5: Option5,
+                    Option5Id: Option5Id,
+                    Status: Status,
+                    Marks: Marks
+                },
+                success: function (result) {
+
+                    if (result != null || result != undefined) {
+
+                        if (result.status == "success") {
+                            $.notify(result.msg, "success");
+                        }
+                        else if (result.status == "error") {
+                           $.notify(result.msg, "error");
+                           
+                            return;
+                        }
+
+                    } else {
+                          $.notify("Something went wrong", "error");
+                        return;
+                    }
+
+                }
+            });
+
+            $('#questionsModal').modal({ closable: false }).modal('show');
+        }
+
+    </script>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+
+
+        getTestsReports();
+
+
+
+        function getTestsReports() {
+
+            $('#TempTable2').DataTable().destroy();
+
+            $.ajax({
+                url: '@Url.Action("Get_Reports", "Questioner")',
+                type: "POST",
+                data: { Criteria: "PKT_Question_Uploads" },
+                success: function (result) {
+
+                    if (result != null) {
+                        if (result != undefined && result.status == "success") {
+
+                            if (Object(result).length === 0) {
+                                $.notify("No Records Found", "error");
+                                $('.spinner').css('display', 'block').fadeOut();
+                                return;
+                            }
+ 
+                            DynamicTable.renderTable({
+                                jsonData: result.data,
+                                targetElementId: 'DivTempTable2',
+                                tableClasses: ["ui", "selectable", "table", "striped"],
+                                columnModifiers: [ ]
+                            });
+ 
+                            $('#TempTable2').DataTable();
+                            $('.rating').rating('enable');
+                            return;
+
+                        } else {
+                            $.notify(result.msg, "error");
+                            return;
+                        }
+                    } else if (result.status == "error") {
+                        $.notify(result.mod.msg, "error");
+                        return;
+                    } else {
+                        $('.spinner').css('display', 'block').fadeOut();
+                        return;
+                    }
+                }, failure: function (result) {
+                    $.notify(result.responseText, "error");
+                    return;
+                },
+                error: function (result) {
+                    $.notify(result.responseText, "error");
+                    return;
+                }
+            });
+        }
+ 
+
+
+        function Update_ActiveStatus(buttonElement) {
+
+
+            var row = buttonElement.closest('tr');
+            var EighthColumntext = row.querySelectorAll('td')[7].querySelector('a').innerHTML.trim();
+            var firstColumnId = parseInt(row.querySelectorAll('td')[0].querySelector('div').id.trim(), 10);
+
+            if (EighthColumntext == "inActive") {
+                $.notify("Already Deleted!", "error");
+                return;
+            }
+
+            var  promptAlert = confirm("Do you want to inActive the Test?");
+            if (!promptAlert) {
+                return;
+            }
+
+            var promptAlert1 = confirm("Remember! If you want to do Inactive, It will be the deleted from the Uploaded Records Permenantley!");
+            if (!promptAlert1) {
+                return;
+            }
+  
+            $.ajax({
+                url: '@Url.Action("Update_Active", "Admin")',
+                type: "POST",
+                data: { Criteria: "PKT_Update_TestName_ActiveStatus", Id: firstColumnId, Condition1: "" },
+                success: function (result) {
+
+                    if (result.mod.status == "success" ) {
+
+                        if (result.mod.message == 'ANA') {
+                            $.notify("Access Not Allowed!", "error");
+                        } else {
+                            $.notify(result.mod.message, "success");
+                            getTestNamesReports();
+                            $("#CostNameDropdown").trigger('change');
+                        }
+                    } else {
+
+                        $.notify(result.mod.message, "error");
+                    }
+                }
+
+            });
+        }
+
+
+
+        let contentChanged = false;
+
+        function handleInput(element) {
+            // Set a flag indicating content change
+            contentChanged = true;
+        }
+
+        function handleBlur(element) {
+            if (contentChanged) {
+                Update_Duration(element);
+                contentChanged = false; // Reset the flag
+            }
+        }
+
+
+            function Update_Duration(buttonElement) {
+       
+            var  promptAlert = confirm("Do you want to Update Duration?");
+                if (!promptAlert) {
+                    return;
+                }
+
+
+            var row = buttonElement.closest('tr');
+            var firstColumnId = row.querySelector('td:first-child').innerHTML;
+            var CurrentDuration = row.querySelectorAll('td:nth-child(5) div')[0].innerHTML;
+
+          
+
+            $.ajax({
+                url: '@Url.Action("Update_Active", "Admin")',
+                type: "POST",
+                data: { Criteria: "PKT_Update_TestName_Duration", Id: firstColumnId, Condition1: CurrentDuration },
+                success: function (result) {
+                     
+                     $.notify("Duration Updated !", "success");
+
+                }
+
+            });
+        }
+
+
+
+ 
+        function getTestNamesEditHistory(Ids) {
+
+            $('#TempTable3').DataTable().destroy();
+
+    
+            $.ajax({
+                url: '@Url.Action("Get_Reports", "Questioner")',
+                type: "POST",
+                data: { Criteria: "PKT_Question_EditHistory", Id: Ids},
+                success: function (result) {
+
+                    if (result != null) {
+                        if (result != undefined && result.status == "success") {
+
+                            if (Object(result).length === 0) {
+                                $.notify("No Records Available", "error");
+                                $('.spinner').css('display', 'block').fadeOut();
+                                return;
+                            }
+ 
+                            DynamicTable.renderTable({
+                                jsonData: result.data,
+                                targetElementId: 'DivTempTable3',
+                                tableClasses: ["ui", "selectable", "table"],
+                                columnModifiers: []
+                            });
+
+                            $('#TempTable3').DataTable({
+                                "lengthMenu": [10, 50],
+                                "searching": true,
+                                "ordering": true
+                            });
+
+                            return;
+
+                        } else {
+                            $.notify(result.msg, "error");
+                            return;
+                        }
+                    } else if (result.status == "error") {
+                        $.notify(result.mod.msg, "error");
+                        return;
+                    } else {
+                        $.notify("Something went wrong", "error");
+                        return;
+                    }
+                }, failure: function (result) {
+                    $.notify(result.responseText, "error");
+                    return;
+                },
+                error: function (result) {
+                    $.notify(result.responseText, "error");
+                    return;
+                }
+            });
+
+            $('#TestHistoryModal').modal({ closable: true }).modal('show');
+        }
+    </script>
+
+
+
+
+
+
+}
+
+
+ 

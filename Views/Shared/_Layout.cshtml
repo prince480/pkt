@@ -1,0 +1,129 @@
+﻿@model List<NavBar>
+@using Microsoft.AspNetCore.Http
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PKT</title>
+    @*  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">  *@
+
+    <link href="~/lib/semanticui/semantic.min.css" rel="stylesheet" />
+    <link href="~/iconpack/icon.css" rel="stylesheet" />
+    <link href="~/iconpack/icon.min.css" rel="stylesheet" />
+@*     <link href="~/lib/datatables/jquery.datatables.css" rel="stylesheet" /> *@
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/iconpack/package.js"></script>
+    <script src="~/js/notify.js"></script>
+    <script src="~/js/notify.min.js"></script>
+
+@*     <script src="~/lib/datatables/jquery.datatables.js"></script> *@
+    <script src="~/js/dynamic-table-json-1.3.js"></script>
+
+    <script src="~/lib/semanticui/semantic.min.js"></script>
+
+    <link href="~/lib/datatables/jquery.datatables.css" rel="stylesheet" />
+
+    <script src="~/lib/datatables/jquery.datatables.js"></script>
+     
+    
+    <style>
+
+        body {
+            background-image: url('http://10.1.10.26:952/ServerMonitor/input/Files/PKTbg.svg');
+            background-size: cover; /* Adjusts the size to cover the whole background */
+            }
+
+    </style>
+</head>
+
+<body>
+    <header style="padding-bottom:60px">
+   
+       
+        <div class="ui inverted fixed menu">
+            <div class="header item">Product Knowledge Test</div>
+             
+            @if (ViewData["NavBar"] is List<NavBar> navBarList)
+            {
+                var privilege = ViewBag.Privilege as int?;
+
+                var topLevelMenus = navBarList.Where(item => item.MenuId == 0);
+
+                foreach (var topLevelMenu in topLevelMenus)
+                {
+                    var menuAccess = topLevelMenu.Access.Split(',').Select(int.Parse).ToList();
+                    if ((privilege.HasValue && menuAccess.Contains(privilege.Value)) || privilege == null)
+                    {
+                        <a href="/Home/Index">
+                            <div class="ui dropdown item" tabindex="0">
+                            <a class="dropdown-item" asp-area="" asp-controller="@topLevelMenu.ControllerName" asp-action="@topLevelMenu.ActionName">@topLevelMenu.LinkText </a>
+           
+                            @if (navBarList.Any(item => item.MenuId == topLevelMenu.Id))
+                            {
+                                <i class="dropdown icon"></i>
+                                <div class="menu transition hidden" tabindex="-1">
+                                    @foreach (var submenu in navBarList.Where(item => item.MenuId == topLevelMenu.Id))
+                                    {
+                                        var submenuAccess = submenu.Access.Split(',').Select(int.Parse).ToList();
+                                        if ((privilege.HasValue && submenuAccess.Contains(privilege.Value)) || privilege == null)
+                                        {
+                                            <a class="item active selected" asp-controller="@submenu.ControllerName" asp-action="@submenu.ActionName">  @submenu.LinkText  </a>
+                                        }
+                                    }
+                                </div>
+                            }
+
+                        </div>
+                        </a>
+                    }
+                }
+            }
+
+
+            <div class="right item">
+
+                <div class="">  @ViewBag.UserName   |</div>
+                <a class="ui inverted button" asp-controller="SignIn" asp-action="Login">Logout</a>
+
+            </div>
+  
+ 
+        </div>
+
+
+    </header>
+    <div class="container">
+        <main role="main" >
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container"> 
+            Product Knowledge Test  - &copy; 2023 -  <a asp-area="" asp-controller="Home" asp-action="Privacy">iMarque Solutions Pvt Ltd</a>
+        </div>
+    </footer>
+   
+    
+@*     <script src="~/lib/jquery/dist/jquery.min.map"></script> *@
+
+  @*   <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script> *@
+    <script>
+        $(document).ready(function () {
+            $('.ui.dropdown').dropdown({
+                on: 'hover', // Set dropdown behavior to trigger on hover
+                action: 'hide' // Hide dropdown on mouseout
+            });
+        });
+    </script>
+
+ 
+    @await RenderSectionAsync("Scripts", required: false)
+ 
+</body>
+</html>

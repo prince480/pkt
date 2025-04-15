@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "selectize.js@0.13.3",
+      "destination": "wwwroot/css/"
+    }
+  ]
+}

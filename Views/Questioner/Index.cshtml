@@ -1,0 +1,801 @@
+﻿
+@{
+    ViewData["Title"] = "PKT Questioner";
+    Layout = "_Layout";
+}
+
+ 
+
+<link   href="~/iconpack/icon.css" rel="stylesheet" />
+<link   href="~/iconpack/icon.min.css" rel="stylesheet" />
+@* <script src="~/iconpack/package.js"></script> *@
+
+<script src="~/js/dynamic-querystrings-1.0.js"></script>
+
+<style>
+    #TempTable1 td, #TempTable1 th {
+        padding: 5px !important; 
+        font-size: 12.5px;
+    }
+
+ </style>
+
+
+<style>
+
+
+    .ui.progress:first-child {
+      margin: 0;
+    }
+
+    .ui.progress {
+        font-size: 0.5rem;
+    }
+
+    .ui.styled.accordion, .ui.styled.accordion .accordion {
+ 
+    box-shadow: none;
+    }
+
+
+    .answered{
+        color: rgb(0 0 0 / 94%) !important;
+    }
+     
+
+    .field {
+        padding: 10px !important;
+        margin: 0 !important;
+ 
+    }
+
+    .field:hover {
+        padding: 10px !important;
+        background-color: #ebe5f8 !important;
+        border-radius: 5px !important;
+            font-weight: bold;
+    }
+</style>
+ 
+
+<div class="ui modal fullscreen" id="confirmation-modal">
+    @* <i class="close icon"></i> *@
+    <div class="header">Confirm Your Answers</div>
+    <div class="scrolling content">
+        <div id="modal-content"> 
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui negative button" id="confirm-edit" >Edit</div>
+        <div class="ui positive button" id="confirm-save">Confirm</div>
+    </div>
+</div>
+ 
+<div class="ui container">
+    
+   
+    
+
+    <div class="ui form segment " id="PKTDetailsDiv"> 
+        <a class="ui violet ribbon label large ">Product Knowledge Test</a>
+        <br />
+     
+
+        <div class="two fields" style="display:none">
+            <div class="field">
+                <label>Project Name</label>
+ 
+
+                <select id="CostNameDropdown" >
+                    <option value="">Select one...</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>PKT Name</label>
+            
+
+                <select id="PKTCodeDropdown">
+                    <option value="">Select one...</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label> .</label>
+                <div class="ui multiple ">
+                    <button class="ui violet button" id="startTest" onclick="View_Questioner()">Start Test</button>
+                </div>
+            </div>
+        </div>
+
+      
+        <div class="ui segment violet">
+
+            <div id="DivTempTable1" style="overflow: auto; "></div>
+        </div>
+
+    </div>
+
+    <div class="ui piled raised segment" id="QuestionPaperDiv" style="display:none">
+
+        <div class="ui text loader">Loading</div>
+
+                    <a class="ui violet ribbon label large">Questioners</a>
+        <a class="ui ui top right attached label big" id="PKTNames">IOBCC</a>
+ 
+        <br />  <br />  
+        <div class="ui grid">
+            <div class="one wide column">
+               
+            </div>
+
+            <div class="twelve wide column segment" >
+
+                     <div class="ui violet active progress" id="progress-bar" style="display:none;">
+                        <div class="bar" style="transition-duration: 300ms; width: 0%;">
+                            <div class="progress"></div>
+                        </div>
+                    </div>
+
+                
+                
+                <div class="ui segment loading" id="QuestionPaper">  
+
+
+
+                </div>
+                <div class="ui icon button" data-tooltip="Use Left Arrow key for Back" data-position="right center" id="back-button">
+                    Back
+                </div>
+
+                <div class="ui icon button right floated" data-tooltip="Use Right Arrow key for Next" data-position="left center" id="next-button">
+                    Next
+                </div>
+
+ 
+              
+                <button class="ui positive button right floated" id="save-button" onclick="btnSaveAction();">Save</button>
+
+            </div>
+            <div class="two wide column">
+                <div class="fixed column">
+                    <div class="ui segment sticky fixed " >
+                        <a class="ui right corner label large">  <i class="stopwatch icon"></i>   </a>
+                        <div class="ui voilet statistic fixed violet">
+                            <br />
+                            <div class="value">
+                                <span id="time-left">20:00</span>
+                            </div>
+                            <br />
+
+                            <div class="ui buttons" id="timerButtons">
+                                <button class="ui  button " id="start-button">Start</button>
+                                    <div class="or"></div>
+                                <button class="ui  button disabled " id="pause-button">pause</button>
+                                </div>
+ 
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ <br />
+  <br />
+
+
+  <br />
+  <br />
+  <br />
+
+<script type="text/javascript">
+
+
+
+          $(document).ready(function () {
+            CostCodeList();
+
+        });
+
+
+        $(document).ready(function () {
+
+            var params = $.getQueryParams();
+            var TestName = params['PKTName'];
+            
+            if (TestName) {
+                    Get_Questioner(TestName);
+                }else{
+            getTestsReports();
+                }  
+
+        });
+
+
+         
+
+
+
+    function updateProgressBar() {
+        const totalQuestions = $('.ui.styled.accordion.fluid .title').length;
+        const answeredQuestions = $('.ui.styled.accordion.fluid .title.answered').length;
+        const progress = Math.round((answeredQuestions / totalQuestions) * 100);
+
+
+        if (progress != 0) {
+            $('#progress-bar').show('fade');
+        $('#progress-bar .bar').css('width', progress + '%');
+
+        $('#progress-bar .progress').text(progress + '%');
+        }
+    }
+
+
+    var currentQuestionIndex = 0;
+    $('#save-button').hide('fade');
+
+    function showQuestion(index,fade) {
+        $('.ui.styled.accordion.fluid .title').hide();
+        $('.ui.styled.accordion.fluid .content').hide();
+
+        const currentTitle = $('.ui.styled.accordion.fluid .title').eq(index);
+        const currentContent = $('.ui.styled.accordion.fluid .content').eq(index);
+
+        if(fade==""){
+            currentTitle.show();
+            currentContent.show();
+        }else{
+
+        currentTitle.show(fade);
+        currentContent.show(fade);
+        }
+    }
+
+    function navigateNext() {
+        if (currentQuestionIndex < $('.ui.styled.accordion.fluid .title').length - 1) {
+            currentQuestionIndex++;
+            showQuestion(currentQuestionIndex);
+            $('#save-button').hide('fade');
+        } else {
+            $('#next-button').hide('fade');
+            $('#save-button').show('fade');
+        }
+    }
+
+    function navigateBack() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            showQuestion(currentQuestionIndex);
+            $('#save-button').hide('fade');
+            $('#next-button').show('fade');
+        }
+    }
+
+ 
+    function Get_Questioner(TestName) {
+
+    
+
+    localStorage.removeItem('storedTimeLeft');
+
+     
+
+    $.ajax({
+        type: "POST",
+        url: "@Url.Action("Get_Questions", "Questioner")",
+        data: { TestName: TestName },
+        success: function (data) {
+            if (data.status == "success") {
+
+                    ;
+                    $("#PKTDetailsDiv").hide('fade');
+                    $("#QuestionPaperDiv").show('fade');
+                    $("#PKTNames").text(TestName);
+                    setTimeout(function () {
+                    $("#timerButtons").notify("Click to Start the Test!", "success", { position: "top" });
+                    }, 1000);
+
+
+                    localStorage.setItem('TestDuration', data.duration);
+
+
+                    const questionsObject = JSON.parse(data.questions);
+                    const questionsArray = questionsObject.questions;
+
+                    const questions = shuffleArray(questionsArray);
+
+                function shuffleArray(array) {
+                    for (let i = array.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                    console.log(array);
+                    return array;
+
+                }
+
+                function generateQuestions() {
+                    const questionsContainer = $('#QuestionPaper');
+                    questionsContainer.empty();
+
+                        questionsArray.forEach(function (question, index) {
+                        question.options = shuffleArray(question.options);
+
+
+                        const accordion = $('<div class="ui styled accordion fluid"></div>');
+                            const title = $(`<div class="active title"><i class="dropdown icon"></i>${index + 1}. ${question.question}</div>`);
+
+                            const content = $(`<div class="active content" id="content-${index}"></div>`);
+                        const optionsList = $('<div class="ui form"></div>');
+
+
+
+                        optionsList.append(`
+                                <div class="field" data-Id="${question.id}-${question.options[0].id}" data-index="${index}">
+                                <div class="ui toggle checkbox">
+                                        <input type="radio" name="${question.id}" id="${question.id}-${question.options[0].id}">
+                                        <label for="${question.id}-${question.options[0].id}">${question.options[0].text}</label>
+                                </div>
+                            </div>
+                        `);
+
+                        question.options.slice(1).forEach(function (option, i) {
+                            optionsList.append(`
+                                    <div class="field" data-Id="${question.id}-${question.options[i+1].id}" data-index="${index}">
+                                    <div class="ui toggle checkbox">
+                                                <input type="radio" name="${question.id}" id="${question.id}-${question.options[i + 1].id}">
+                                                <label for="${question.id}-${question.options[i + 1].id}">${option.text}</label>
+                                    </div>
+                                </div>
+                            `);
+                        });
+
+                        content.append(optionsList);
+                        accordion.append(title, content);
+                        questionsContainer.append(accordion);
+
+                        function isQuestionAnswered() {
+                            const questionId = question.id;
+                            return $(`input[name="${questionId}"]:checked`).length > 0;
+                        }
+
+                        function updateTitleDisplay() {
+                            const isChecked = isQuestionAnswered();
+                            title.toggleClass('answered', isChecked);
+                            title.find('a').remove();
+ 
+
+                                updateProgressBar();
+                        }
+
+                        var clickedTitleIndex = '';
+                        optionsList.on('change', 'input[type="radio"]', function () {
+                            updateTitleDisplay();
+                            clickedTitleIndex = title.data('index');
+                          
+                        });
+
+                        $(".field").click(function () {
+                            var radioId = $(this).attr("data-Id");
+                            clickedTitleIndex = $(this).attr("data-index");
+                            var radio = $("#" + radioId);
+                            radio.prop("checked", true);
+                         
+                            updateTitleDisplay();
+                        });
+
+                    $('.ui.styled.accordion').accordion();
+    
+                });
+
+                }
+
+                    showQuestion(0);
+                    generateQuestions();
+                    updateProgressBar();
+
+                    $('.ui.styled.accordion.fluid .title:not(:first)').hide('fade');
+                    $('.ui.styled.accordion.fluid .content:not(:first)').hide('fade');
+
+            } else {
+                    $.notify("No Data Found!", "error");
+                return;
+            }
+        }
+    });
+}
+
+
+    let timerInterval; 
+    let timeLeft = 0;
+    
+    function startTimer() {
+ 
+        timeLeft = localStorage.getItem('TestDuration');
+    
+        if (localStorage.getItem('TestDuration')) {
+            timeLeft = parseInt(localStorage.getItem('TestDuration'));
+            localStorage.removeItem('TestDuration');
+        }else if (localStorage.getItem('storedTimeLeft')) {
+            timeLeft = parseInt(localStorage.getItem('storedTimeLeft'));
+        }
+
+        timerInterval = setInterval(function () {
+            if (timeLeft > 0) {
+                timeLeft--;
+                localStorage.setItem('storedTimeLeft', timeLeft.toString()); 
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                $('#time-left').text(`${minutes}:${seconds < 10 ? '0' : ''}${seconds}`);
+            } else {
+                clearInterval(timerInterval);
+                $.notify("Time is up!", "error");
+
+                btnSaveAction(true);
+
+                localStorage.removeItem('storedTimeLeft'); 
+                $('#QuestionPaper').addClass('loading');
+            }
+        }, 1000);
+    }
+
+    function pauseTimer() {
+        $('#QuestionPaper').addClass('loading');
+
+        $('#start-button').removeClass('loading disabled').text('resume');;
+        clearInterval(timerInterval);
+    }
+
+    function resumeTimer() {
+        $('#start-button').addClass('loading disabled');
+
+        $('#QuestionPaper').removeClass('loading'); 
+        startTimer();
+    }
+
+    $('#pause-button').click(pauseTimer);
+    $('#start-button').click(resumeTimer);
+
+    $('#next-button').click(() => {
+        navigateNext();
+        updateProgressBar();
+    });
+    $('#back-button').click(() => {
+        navigateBack();
+        updateProgressBar();
+    });
+
+</script>
+
+
+<script type="text/javascript">
+
+  
+
+        function CostCodeList() {
+            Get_Dropdowns(function (data) {
+                var selectElement = $("#CostNameDropdown");
+                selectElement.empty();
+
+            if (data.length > 0) {
+                $.each(data, function (index, item) {
+                    selectElement.append(
+                        $('<option></option>').attr('value', item.CODE).text(item.NAME)
+                    );
+                });
+            }  
+                selectElement.append(
+                    $('<option></option>').text('Please select').attr('value', '0')
+                );
+
+            $("#CostNameDropdown").trigger("change");
+
+        }, "PKT_UserCostName", 0);
+        }
+
+        function PKTCodeList(Id) {
+                Get_Dropdowns(function (data) {
+                    var selectElement = $("#PKTCodeDropdown");
+                    selectElement.empty();
+                if (data.length > 0) {
+                    $.each(data, function (index, item) {
+                        selectElement.append(
+                            $('<option></option>').attr('value', item.CODE).text(item.NAME)
+                        );
+                    });
+                }  
+             
+            }, "PKT_PKTName", Id);
+        }
+
+        function Get_Dropdowns(callback, Criteria, Id) {
+            $.ajax({
+                url: "@Url.Action("get_dropdown_list", "Upload")",
+                type: 'GET',
+                dataType: 'json',
+                data: { Id: Id, Criteria: Criteria },
+                success: function (data) {
+                    callback(data.Table);
+                },
+                error: function () {
+                    $.notify("Error fetching data", "error");
+                }
+            });
+        }
+
+
+
+        $(document).ready(function () {
+        var costNameDropdown = $('#CostNameDropdown');
+            costNameDropdown.change(function () {
+                var selectedValue = $(this).val();
+                    if (selectedValue !== '') {
+                        PKTCodeList(selectedValue);
+                }
+            });
+        });
+
+
+</script>
+
+
+<script type="text/javascript">
+
+    function View_Questioner() {
+
+        var Questioner = new Object();
+        Questioner.CostCode = $('#CostNameDropdown').val();
+        Questioner.PKTCode = $('#PKTCodeDropdown').val(); 
+        var TestName = $('#PKTCodeDropdown option:selected').text();
+
+        if (Questioner.CostCode == null || Questioner.CostCode == '' || Questioner.CostCode == '0') {
+            $.notify("Please select Cost Name", "error");
+            $("#qrc").focus();
+            return;
+        }
+
+        if (Questioner.PKTCode == null || Questioner.PKTCode == '' || Questioner.PKTCode == '0') {
+            $.notify("Please select PKT Name", "error");
+            $("#maintype").focus();
+            return;
+        }
+
+        Get_Questioner(TestName);
+
+
+
+
+    }
+
+
+
+
+    function navigateToUnanswered() {
+        const unansweredIndex = getFirstUnansweredIndex();
+        if (unansweredIndex !== -1) {
+            showQuestion(unansweredIndex, "fade");
+            $('#save-button').hide('fade');
+            $('#next-button').show('fade');
+        }
+    }
+
+    function getFirstUnansweredIndex() {
+        let unansweredIndex = -1;
+        $('.ui.styled.accordion.fluid .content').each(function (index) {
+            const radios = $(this).find('input[type="radio"]');
+            if (radios.filter(':checked').length === 0) {
+                unansweredIndex = index;
+                return false;  
+            }
+        });
+        return unansweredIndex;
+    }
+
+
+
+
+    function btnSaveAction(TimeUp=false) {
+                     
+        var unansweredQuestions = getFirstUnansweredIndex();
+
+        if (!TimeUp && unansweredQuestions !== -1) {
+
+            $("#progress-bar").notify("Please answer the Pending Questions!", { position: "top-right" });
+
+            navigateToUnanswered();
+        } else {
+            const modalContent = $('#modal-content');
+            modalContent.empty();
+
+            $('.ui.styled.accordion .title').each(function () {
+                const questionText = $(this).text();
+                const selectedOption = $(this).next('.content').find('input:checked + label').text();
+
+            modalContent.append(`<p>${questionText} <strong>${selectedOption} </strong></p>`);
+            });
+
+       
+            $('#confirmation-modal').modal({
+                closable: false // Prevents closing the modal
+            }).modal('show');
+
+
+            if (TimeUp){
+                $('#confirm-edit').hide('fade');
+            }
+
+
+            $('#confirm-save').click(function () {
+                $('#confirm-save').addClass('loading disabled');
+                  btnSave(); 
+                $('#confirm-save').removeClass('loading disabled');
+            });
+
+            $('.ui.negative.button').click(function () {
+                $('#confirmation-modal').modal('hide');
+            });
+        }
+  
+    }
+
+    function areAllRadiosChecked() {
+        var allChecked = true;
+        $('.ui.styled.accordion.fluid .content').each(function () {
+            var radios = $(this).find('input[type="radio"]');
+            if (radios.filter(':checked').length === 0) {
+                allChecked = false;
+                return false; 
+            }
+        });
+        return allChecked;
+    }
+
+ 
+  </script>
+
+
+
+
+<script type="text/javascript">
+
+
+        function btnSave(){
+
+        var selectedIds = [];
+        $('input[type="radio"]:checked').each(function () {
+            selectedIds.push($(this).attr('id'));
+        });
+
+
+        var PKTId = $('#PKTCodeDropdown').val();
+        var TimeTaken = localStorage.getItem('storedTimeLeft');
+
+
+         $.ajax({
+                url: "@Url.Action("Add_Questions_Entry", "Questioner")",
+                method: 'POST',
+            data: { selectedIds: selectedIds, PKTId: PKTId, TimeTaken :TimeTaken},
+                success: function (response) {
+
+                if (response.status == "success") {
+
+                    $("#QuestionPaperDiv").hide('fade');
+                    $("#PKTDetailsDiv").show('fade');
+
+                    $.notify("Added Successfully!", "success");
+
+                      $(document).ready(function() {
+                        setTimeout(function() {
+                            window.location.href = '@Url.Action("Index", "Questioner")';
+                         }, 1000);  
+                      });
+                }
+                else if (response.status == "error") {
+                    $.notify(response.msg, "error");
+                }
+                },
+                error: function (error) {
+                    $.notify('Error saving data: ' + error, "error");
+                }
+            });
+
+
+
+        }
+
+  
+    $(document).keydown(function (event) {
+        if (event.key === 'ArrowRight') {
+            $('#next-button').click();
+        }
+
+        if (event.key === 'ArrowLeft') {
+            $('#back-button').click();
+        }
+
+
+    });
+ 
+
+ 
+
+    function getTestsReports(Rerender="") {
+         
+       $.ajax({
+                url: '@Url.Action("Get_Reports", "Questioner")',
+            type: "POST",
+            data: { Criteria: "PKT_UserTestRecords" },
+            success: function (result) {
+
+                if (result != null) {
+                    if (result != undefined && result.status == "success") {
+
+                        if (Object(result).length === 0) {
+                            $.notify("No Records Found", "error"); 
+                            $('.spinner').css('display', 'block').fadeOut();
+
+                            window.location.href = "../Home/Agent";
+                            return;
+                        }
+
+                        
+                        var Edit = `<button class='ui icon label' title="Click to View Questions" onclick="Get_Question('{{td}}')" >  {{td}}</button>`;
+                        var Stars = ` <div class="ui star rating" data-rating="{{td}}" data-max-rating="5"></div>`;
+
+                        var ReTestStatus = {
+                            'true': ` <div class="ui red basic label" > <i class="attention icon"> </i> Retest  </div> `,
+                            'false': `<div class="ui green basic label"> <i class="icon checkmark"> </i> Success  </div>`,
+                            };
+ 
+                            DynamicTable.renderTable({
+                            jsonData: result.data,
+                            targetElementId: 'DivTempTable1',
+                                tableClasses: ["ui","selectable", "table", "striped"],
+                                columnModifiers: [
+                                    ["1", Edit] ,
+                                    ["4", Stars],
+                                    ["5", ReTestStatus],
+                                ]
+                            });
+               
+                            $('.rating').rating('enable');
+ 
+
+                        return;
+
+                    } else {
+                        $.notify(result.msg, "error");
+                        $('.spinner').css('display', 'block').fadeOut();
+                        window.location.href = "../Home/Agent";
+                        return;
+                    }
+                } else if (result.status == "error") {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify(result.mod.msg, "error");
+                    return;
+                } else {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify("Something went wrong", "error");
+                    return;
+                }
+            }, failure: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+
+                $.notify(result.responseText, "error");
+                return;
+            },
+            error: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+
+                $.notify(result.responseText, "error");
+                return;
+            }
+        });
+    }
+
+
+     
+
+
+</script>

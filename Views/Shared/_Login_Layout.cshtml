@@ -1,0 +1,99 @@
+﻿@model List<NavBar>
+@using Microsoft.AspNetCore.Http
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PKT</title>
+ 
+   @*  <link rel="stylesheet" href="~/css/js-snackbar.css" asp-append-version="true" /> *@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
+    <script href="~/lib/jquery/dist/jquery.min.map"> </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+
+    <script src="~/js/notify.js"></script>
+    <script src="~/js/notify.min.js"></script>
+ 
+
+      
+    <style>
+
+        body {
+            background-image: url('http://10.1.10.26:952/ServerMonitor/input/Files/PKTbg.svg');
+            background-size: cover; /* Adjusts the size to cover the whole background */
+            }
+
+    </style>
+
+
+</head>
+
+<body>
+    <header>
+   
+     
+
+
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            Product Knowledge Test  - &copy; 2023 -  <a asp-area="" asp-controller="Home" asp-action="Privacy">iMarque Solutions Pvt Ltd</a>    
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.ui.dropdown').dropdown();
+        });
+    </script>
+
+ 
+    <script src="~/js/js-snackbar.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+
+    <script>
+        var snackBar = function (status, message, icon, timeout, speed, position) {
+            SnackBar({
+                status: status,   //Default,Success,Warning,Danger,Info//
+                message: message,
+                icon: icon,        //Exclamation,Question,Plus/ We Can Add any Character//
+                timeout: 5000,       // ms //
+                speed: speed,       //speed: 500//
+                position: "Bottom-Right",       // tl(Top-Left),tc or tm (Top-Center), bl (Bottom-Left),bc or bm (Bottom-Center),br (Bottom-Right)//
+                fixed: true,
+                //actions: [
+                //                    {
+                //                        text: "Click Me!",
+                //                        function: function () {
+                //                            alert("A-C-T-I-O-N");
+                //                        }
+                //                    }
+                //]
+            })
+        }
+    </script>
+
+
+
+</body>
+</html>

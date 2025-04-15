@@ -1,0 +1,282 @@
+﻿@model PKT.Models.Login
+@{
+    ViewData["Title"] = "Login";
+     Layout = "_Login_Layout"; 
+}
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+ 
+ <style>
+     .bgSVG {
+        background-image: url(http://10.1.10.26:952/ServerMonitor/input/Files/PKTbg.svg);
+        background-size: cover;
+     }
+
+ </style>
+
+
+<div class="ui middle aligned centered grid">
+    <div class="sixteen wide mobile eight wide computer column">
+        <div class="ui violet segment">
+            <div class="ui stackable two column grid " id="gridCard">
+                <div class="column ">
+                    <div class="ui form">
+                        <div class="field">
+                            <label>Emp Code</label>
+                            <div class="ui left icon input">
+                                <!-- Adjusted class names for inputs -->
+                                @Html.EditorFor(model => model.userId, new { htmlAttributes = new { @class = "ui input", id = "userId" } })
+                                <i class="user icon"></i>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>Password</label>
+                            <div class="ui left icon input">
+                                <!-- Adjusted class names for inputs -->
+                                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "ui input", id = "Password", type="password" } })
+                                <i class="lock icon"></i>
+                            </div>
+                        </div>
+                        <div style="width: 100%;margin-top: 9px;"  class="ui violet button" id="btnLogin" onclick="CRM_LoginForm();">Login</div>
+                    </div>
+                </div>
+                <div class="column ">
+                    <div class="ui raised card" style="width: 100%;">
+                        <div class="content" id="SecondCard"  >
+                            <div class="header" style="display: flex; align-items: center; ">
+                                <img class="ui avatar image" id="ImgAvatar" src="http://10.1.10.5/eTicket/Images/Logo/imarque_logo.png" style="display:none;">
+                                <div id="UserName"> PKT</div>
+                            </div>
+                            <div class="meta">
+                                <span class="category" id="UserStatus" style="font-weight: bold;color: #3f2c68;">Product Knowledge Test</span>
+                            </div>
+                            <div class="description ui placeholder" id="UserDesc" style="color: #150d28;">
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                            </div>
+                            <br />
+                            <div class="placeholder"><div class="line"></div></div>
+
+                            <div class="ui horizontal divider">
+                                -
+                            </div>
+                            <div class="content" id="CommentsDiv" style="display:none; font-weight: bold;">
+                                <span class="right floated">
+                                    <i class="heart outline like icon"></i>
+                                    <span id="likeCount">17</span> likes
+                                </span>
+                                <i class="comment icon"></i>
+                                <span id="commentCount">3</span> comments
+                            </div>
+                        </div>
+
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+ 
+<script>
+    $(document).ready(function () {
+
+         // Initialize the shape
+        $('.ui.shape').shape();
+
+        // Add click event handlers to the buttons
+        $('#rotateLeftButton').click(function () {
+            $('.ui.shape').shape('flip left');
+        });
+
+        $('#rotateRightButton').click(function () {
+            $('.ui.shape').shape('flip right');
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+   
+    function CRM_LoginForm() {
+        
+        var Login = {
+                userId: $('#userId').val(), //'1849', //
+                Password: $('#Password').val() //'007@Textiiee'//
+        };
+
+
+        if (Login.userId == null || Login.userId == '' || Login.userId.length == 0) {
+            $('.spinner').css('display', 'block').fadeOut(500);
+            $("#userId").focus();
+                $("#gridCard").notify("Please Enter User ID.", { position: "top" },"error");
+            return;
+        }
+
+        if (Login.Password == null || Login.Password == '' || Login.Password.length == 0) {
+            $('.spinner').css('display', 'block').fadeOut(500);
+            $("#Password").focus();
+                $("#gridCard").notify("Please Enter Password.", { position: "top" },"error");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("Login", "SignIn")",
+            data: JSON.stringify(Login),
+            contentType: "application/json; charset:utf-8",
+            dataType: "json",
+            success: function (response) {
+                if (response.success == true) {
+                    $.notify("Login Successfully.", "success");
+
+
+                        if (response.privilege <= 3) {
+                        window.location.href = "@Url.Action("Index", "Home")";
+                    } else {
+                            window.location.href = "@Url.Action("Agent", "Home")";
+                    }
+                    } else if (response.success == false) {
+                        $("#gridCard").notify(response.msg, { position: "top" });
+                    }
+            }
+        });
+    }
+</script>
+
+
+
+
+<script type="text/javascript">
+
+    $("#userId").on("blur", function () {
+        CRM_CheckUserDetails();
+    });
+
+
+
+    function CRM_CheckUserDetails() {
+
+        var motivationalQuotes = [
+            "Believe in yourself; you've prepared for this moment. 💪📚",
+            "You are capable of more than you know. Embrace the test with confidence. 🌟",
+            "Tests are challenges in disguise. Conquer them with a positive mindset. 🧠✅",
+            "Success is the result of preparation, hard work, and a positive mindset. 📖💪😊",
+            "Remember, you've got the knowledge. Now, show the world. 🌍📝",
+            "Stay calm, stay focused, and your test will be a breeze. 🧘‍♂️🎯",
+            "Challenges are opportunities for growth. Ace this test! 💼🚀",
+            "The harder the test, the sweeter the victory. You've got this! 🏆💥",
+            "In the face of a test, let determination be your greatest ally. 💫💪",
+            "Your potential knows no bounds. Let your test be the proof. 🌟🔍",
+            "With every test, you're one step closer to your goals. 📈🌠",
+            "Turn your nervous energy into confident excellence. 🌟💪",
+            "Embrace the challenge, for it's your path to greatness. 🚀🌠",
+            "In the test, find the opportunity to shine. 🌞📚",
+            "Stay positive and conquer the test with a smile. 😄🎓",
+            "You're a test-taking champ. Believe in your abilities! 🏆📖",
+            "Tests are the stepping stones to your bright future. 🌟🚀",
+            "Your potential is limitless. Prove it in this test. 🌠📝",
+            "Success is the sum of small efforts. Excel in your test! 📈💪",
+            "With each question, you're a step closer to success. 🚶‍♂️🎯",
+            "Let your knowledge shine in this test. 💡🌟",
+            "Every test is an opportunity to learn and grow. 📚🌱",
+            "Believe in your abilities; they're your secret weapon. 💪🔐",
+            "In the test, your greatness will be revealed. 🌟💫",
+            "Stay confident, for you're well-prepared for this test. 📖🤝",
+            "Ace this test and let your success speak for you. 🏆📝",
+            "Your determination is your key to test success. 🔑💪",
+            "You are the author of your own test-taking destiny. ✍️🌠",
+            "Stay focused, stay determined, and own that test! 🎯🏁"
+        ];
+
+        var randomQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+
+        var Login = {
+            userId: $('#userId').val(),
+        };
+
+        if (Login.userId == null || Login.userId == '' || Login.userId.length == 0) {
+            $('.spinner').css('display', 'block').fadeOut(500);
+            $("#userId").focus();
+            return;
+        }
+ 
+
+        $.ajax({
+            type: "POST",   
+            url: "@Url.Action("CheckUserDetails", "SignIn")",
+            data: JSON.stringify(Login),
+            contentType: "application/json; charset:utf-8",
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    typeWriterEffect("UserName", 0, response.rows[0].USERNAME,);
+                    typeWriterEffect("UserStatus", 0, response.rows[0].PRIVILEGE,);
+                    $('#UserDesc').html('').removeClass('placeholder');
+                    $('#ImgAvatar').show('fade');
+                    $('#CommentsDiv').show('fade');
+                    typeWriterEffect("UserDesc", 10, randomQuote,);
+                    toggleBackground();
+                    updateCounts();
+                } else{
+                    $('#UserName').text('PKT');
+                    $('#UserStatus').text('Product Knowledge Test');
+                    $('#UserDesc').html(`<div class="line"></div> <div class="line"></div> <div class="line"></div>`).addClass('placeholder');
+                    $('#ImgAvatar').hide('fade');
+                    $('#CommentsDiv').hide('fade');
+                    $('#SecondCard').css('background-image', 'none');
+                }
+            }
+        });
+    }
+ 
+
+ 
+        function typeWriterEffect(elementId, speed = 50, text) {
+            var index = 0;
+            var element = $("#" + elementId);
+            $(element).text('');
+            function type() {
+                if (index < text.length) {
+                    element.append(text.charAt(index));
+                    index++;
+                    setTimeout(type, speed);
+                }
+            }
+                type();
+        }
+  
+    function getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Function to update likes and comments count randomly
+    function updateCounts() {
+        var newLikeCount = getRandomNumber(10, 100); // Generate random likes count
+        var newCommentCount = getRandomNumber(1, 20); // Generate random comments count
+
+        $('#likeCount').text(newLikeCount); // Update likes count in the HTML
+        $('#commentCount').text(newCommentCount); // Update comments count in the HTML
+    }
+
+
+
+    function toggleBackground() {
+        var element = $('#SecondCard');
+        var currentBackground = element.css('background-image');
+
+        if (currentBackground === 'none') {
+            element.css('background-image', `url("http://10.1.10.26:952/ServerMonitor/input/Files/PKTbg.svg")`);
+            element.css('background-size', `cover`);
+ 
+        }  
+    }
+</script> 

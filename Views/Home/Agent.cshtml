@@ -1,0 +1,302 @@
+﻿@{
+    ViewData["Title"] = "Agent Home Page";
+}
+
+<style>
+    #TempTable1 td, #TempTable1 th {
+        padding: 5px !important;
+        font-size: 12.5px;
+    }
+
+/*     .ui.basic.label {
+    
+        border: none !important;
+        border-top-color: currentcolor;
+        border-right-color: currentcolor;
+        border-bottom-color: currentcolor;
+        border-left-color: currentcolor;
+    } */
+
+ </style>
+
+<style>
+
+    .ui.rating .active.icon {
+        color: rgb(100, 53, 201);
+    }
+</style>
+<div class="ui container">
+
+
+    <div class="ui large modal" id="TestHistoryModal">
+        <div class="header">Test History</div>
+        <div class="scrolling content">
+
+            <div id="DivTempTable2" style="overflow: auto; "></div>
+            <br />
+            <br />
+        </div>
+    </div>
+
+
+  
+    <div class="main-content">
+
+
+        <div class="ui segment violet">
+            <div class="ui items">
+                <div class="item">
+                    <a class="ui tiny image" style="/*! border: 1px solid #6435c9; */box-shadow: 3px 3px 10px 0px gray;padding: 9px;border-radius: 5px;">
+                        <img src="http://10.1.10.5/eTicket/Images/Logo/imarque_logo.png">
+                    </a>
+                    <div class="content">
+                        <a class="header">@ViewBag.UserName</a>
+                        <div class="description">
+
+                            <p>@ViewBag.PrivilegeName | @ViewBag.DOJ</p>
+                            <p> @ViewBag.CostName</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="ui segment ">
+            <a class="ui violet ribbon label large"> Test Records</a>
+            <br />
+            <br />
+
+            <div id="DivTempTable1" style="overflow: auto; "></div>
+        </div>
+
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+    </div>
+</div>
+
+
+<script>
+
+
+    getTestsReports();
+     
+
+    function getTestsReports() {
+ 
+        $.ajax({
+            url: '@Url.Action("Get_Reports", "Questioner")',
+            type: "POST",
+            data: { Criteria: "PKT_UserOverall_TestRecords" },
+            success: function (result) {
+
+                if (result != null) {
+                    if (result != undefined && result.status == "success") {
+
+                        if (Object(result).length === 0) {
+                             $.notify("No Records Found", "error");
+                            $('.spinner').css('display', 'block').fadeOut();
+                            return;
+                        }
+
+
+                        var Action = `
+                                <div class="ui animated button" tabindex="0"  onclick="Validate_Test(this,'{{td}}')">
+                                      <div class="hidden content">Start </div>
+                                  <div class=" visible content">
+                                            <i class="icon share square"></i>
+                              </div>
+                            </div>
+                        `;
+
+                        var History = `<button class="ui circular basic icon button" id="{{td}}" onclick="getTestsHistoryReports(this.id)">
+                                                  <i class="history violet  icon"></i>
+                                            </button>`;
+
+                        var NoOfAttempts = ` <div class="ui rating" data-rating="{{td}}" data-max-rating="5"></div>`;
+
+                        var TestStatus = {
+                            'Completed': ` <div class="ui green basic label" > <i class="icon checkmark "> </i> {{td}}  </div> `,
+                            'ReTest': `<div class="ui red basic label"> <i class="icon undo"> </i> {{td}}  </div>`,
+                            'Pending': `<div class="ui violet basic label"> <i class="attention icon"> </i> {{td}}  </div>`,
+                        };
+
+
+                        DynamicTable.renderTable({
+                            jsonData: result.data,
+                            targetElementId: 'DivTempTable1',
+                            tableClasses: ["ui", "selectable", "table", "striped", "striped"],
+                            columnModifiers: [
+                                ["1", Action],
+                                ["2", History],
+                                ["4", TestStatus],
+                                ["5", NoOfAttempts],
+                            ]
+                        });
+
+ 
+                        $('.rating').rating('enable');
+
+
+                       
+
+                       return;
+
+                    } else {
+                        $.notify(result.msg, "error");
+                        $('.spinner').css('display', 'block').fadeOut();
+                        return;
+                    }
+                } else if (result.status == "error") {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify(result.mod.msg, "error");
+                    return;
+                } else {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify("Something went wrong", "error");
+                    return;
+                }
+            }, failure: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+
+                $.notify(result.responseText, "error");
+                return;
+            },
+            error: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+
+                $.notify(result.responseText, "error");
+                return;
+            }
+        });
+    }
+ 
+
+
+            function Validate_Test(element, Id) {
+
+        var closestTR = $(element).closest('tr');
+
+        var thirdColumnText = $(closestTR).find('td:eq(2)').text();
+
+        var fourthColumnHTML = $(closestTR).find('td:eq(3)').text().trim();;
+
+      
+
+                if (fourthColumnHTML == 'Completed') {
+ 
+                    $.notify("Hey! The Test is Completed Already!", "info");
+                    return;
+                }
+ 
+
+            $.ajax({
+                url: "@Url.Action("get_dropdown_list", "Upload")",
+                type: 'GET',
+                dataType: 'json',
+                data: { Id: Id, Criteria: 'PKT_PKTName' },
+                success: function (data) {
+                
+                    TestName =data.Table[0].NAME;
+
+                if (TestName == thirdColumnText) {
+
+                        var url = `@Url.Action("index", "Questioner")?PKTName=${TestName}`;
+
+                        var newTab = window.open(url, '_blank');
+                        newTab.focus();
+
+                    }else{
+
+                    $.notify("Please Complete Previous Tests!", "error");
+
+                    }
+ 
+
+
+                },
+                error: function () {
+                    $.notify("Error fetching data", "error");
+                }
+            });
+        }
+
+
+
+    function getTestsHistoryReports(Ids) {
+
+        $.ajax({
+            url: '@Url.Action("Get_Reports", "Questioner")',
+            type: "POST",
+            data: { Criteria: "PKT_UserTestRecords", Id: Ids  },
+            success: function (result) {
+
+                if (result != null) {
+                    if (result != undefined && result.status == "success") {
+
+                        if (Object(result).length === 0) {
+                            $.notify("No Records Found", "error");
+                            $('.spinner').css('display', 'block').fadeOut();
+ 
+                            return;
+                        }
+
+
+                        var Edit = `<button class='ui icon label' title="Click to View Questions" onclick="Get_Question('{{td}}')" >  {{td}}</button>`;
+                        var Stars = ` <div class="ui star rating" data-rating="{{td}}" data-max-rating="5"></div>`;
+
+                        var ReTestStatus = {
+                            'true': ` <div class="ui red basic label" > <i class="attention icon"> </i> Retest  </div> `,
+                            'false': `<div class="ui green basic label"> <i class="icon checkmark"> </i> Success  </div>`,
+                        };
+
+                        DynamicTable.renderTable({
+                            jsonData: result.data,
+                            targetElementId: 'DivTempTable2',
+                            tableClasses: ["ui", "selectable", "table", "striped"],
+                            columnModifiers: [
+                                ["1", Edit],
+                                ["4", Stars],
+                                ["5", ReTestStatus],
+                            ]
+                        });
+
+                        $('.rating').rating('enable');
+                        $('#TestHistoryModal').modal('show');
+
+                        return;
+
+                    } else {
+                        $.notify(result.msg, "error");
+                        $('.spinner').css('display', 'block').fadeOut();
+                         return;
+                    }
+                } else if (result.status == "error") {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify(result.mod.msg, "error");
+                    return;
+                } else {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify("Something went wrong", "error");
+                    return;
+                }
+            }, failure: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+
+                $.notify(result.responseText, "error");
+                return;
+            },
+            error: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+
+                $.notify(result.responseText, "error");
+                return;
+            }
+        });
+    }
+
+</script>

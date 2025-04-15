@@ -1,0 +1,479 @@
+﻿ 
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+ 
+    #TempTable1 th {
+        font-size: 15px !important;
+        padding: 3px !important;
+        text-align: center;
+    }
+
+    #TempTable1 td {
+        text-align: center;
+        padding: 0px !important;
+        font-size: 13px;
+        border: 0.2px solid #e7ddfe;
+    }
+
+
+    #TempTable2 td, #TempTable2 th  {
+        padding: 7px !important;
+        font-size: 13px;
+        border: 0.2px solid #e7ddfe;
+    }
+
+    .bgSVG {
+        background-image: url(http://10.1.10.26:952/ServerMonitor/input/Files/PKTbg.svg) !important;
+        background-size: cover !important;
+    }
+
+    .ui.card > .content > .description, .ui.cards > .card > .content > .description {
+        color: rgb(0 0 0) !important;
+    }
+
+    .ui.card .meta, .ui.cards > .card .meta {
+        color: rgb(3 0 11) !important;
+        font-weight: bold !important;
+    }
+    .value{
+        text-shadow: 2px 3px #474051;
+        color: #6435c9 !important;
+        font-weight: bold;
+    }
+
+    #DivTempTable1 {
+        margin-top: -1%;
+        overflow: auto;
+        height: 400px;
+        overflow-y: scroll;
+        background: #fff url(http://10.1.10.26:952/ServerMonitor/input/Files/PKTbg.svg) ;
+        background-repeat:cover;
+         
+     }
+ 
+     #realText{
+    padding: 10%;
+    font-size: 20rem;
+    color: transparent;
+    height: 300px;
+    align-items: center;
+    text-align: center;
+    margin-top: 3%;
+     }
+
+    #TextContainer{
+        background: #fff url(http://10.1.10.26:952/ServerMonitor/input/Files/PKTbg.svg) fixed center;
+        background-clip: text;
+        -webkit-background-clip: text;
+    }
+ </style>
+
+    <div class="ui large modal" id="TestHistoryModal">
+        <div class="header"><a class="ui secondary violet ribbon label large"> Test History   </a></div>
+        <div id="DivTempTable2" style="padding:1%; overflow: auto; height: 400px; "></div>
+        <div class="scrolling content">
+
+       
+            <br />
+        </div>
+    </div>
+
+
+<div class="ui fluid container" style="padding: 1%;">
+
+   
+   
+<div class="main-content">
+
+
+    <div class="ui segment violet">
+            <a class="ui secondary  ribbon label large"> Product Knowledge Test Records</a>
+            <br />
+            <div class="ui grid two columns" style="background-image: url(http://10.1.10.26:952/ServerMonitor/input/Files/PKTbg.svg);
+    background-size: contain;">
+
+                <div class="two column" style="width: 30%;">
+                    <div class="ui segment violet" id="placeholderSegment">
+                        <div class="ui placeholder">
+                            <div class="image header large">
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                            </div>
+                        </div>
+                        </br>
+                    </div>
+
+                    <div class="ui segment violet" id="actualContentSegment" style="display: none;">
+                        <div class="ui items">
+                            <div class="item">
+                                <a class="ui tiny image" style="/*! border: 1px solid #6435c9; */box-shadow: 3px 3px 10px 0px gray;padding: 9px;border-radius: 5px;">
+                                    <img src="http://10.1.10.5/eTicket/Images/Logo/imarque_logo.png">
+                                </a>
+                                <div class="content">
+                                    <a class="header">@ViewBag.UserName</a>
+                                    <div class="description">
+                                        <div class="meta">
+                                            <p>@ViewBag.PrivilegeName | @ViewBag.DOJ</p>
+                                        </div>
+                                        <p>@ViewBag.CostName</p>
+                                        <br />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="two column" style="width: 70%;">
+
+                    <div class="ui four column stackable grid" id="placeholderGrid">
+                        <div class="column">
+                            <div class="ui raised segment ">
+                                <div class="ui placeholder">
+                                    <div class="image header">
+                                        <div class="line"></div>
+                                        <div class="line"></div>
+                                    </div>
+                                    <div class="paragraph">
+                                        <div class="medium line"></div>
+                                        <div class="short line"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="column">
+                            <div class="ui raised segment">
+                                <div class="ui placeholder">
+                                    <div class="image header">
+                                        <div class="line"></div>
+                                        <div class="line"></div>
+                                    </div>
+                                    <div class="paragraph">
+                                        <div class="medium line"></div>
+                                        <div class="short line"></div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="column">
+                            <div class="ui raised segment">
+                                <div class="ui placeholder">
+                                    <div class="image header">
+                                        <div class="line"></div>
+                                        <div class="line"></div>
+                                    </div>
+                                    <div class="paragraph">
+                                        <div class="medium line"></div>
+                                        <div class="short line"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="ui raised segment">
+                                <div class="ui placeholder">
+                                    <div class="image header">
+                                        <div class="line"></div>
+                                        <div class="line"></div>
+                                    </div>
+                                    <div class="paragraph">
+                                        <div class="medium line"></div>
+                                        <div class="short line"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ui grid stackable padded" id="actualContent" style="display: none;">
+                        <div class="four wide computer eight wide tablet sixteen wide mobile column">
+                            <div class="ui fluid card bgSVG">
+                                <div class="content" style="text-align:center">
+                                    <div class="ui big statistic">
+                                        <div class="value" id="NYSCount">
+                                            13
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="extra content">
+                                    <div class="ui two buttons">
+                                        <a class="ui violet button" href="#">Not Yet Started</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="four wide computer eight wide tablet sixteen wide mobile column">
+                            <div class="ui fluid card bgSVG">
+                                <div class="content" style="text-align:center">
+                                    <div class="ui big statistic">
+                                        <div class="value" id="NYUCount">
+                                            124
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="extra content">
+                                    <div class="ui two buttons">
+                                        <a class="ui violet button" href="#">Not Yet Uploaded</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="four wide computer eight wide tablet sixteen wide mobile column">
+                            <div class="ui fluid card bgSVG">
+                                <div class="content" style="text-align:center">
+                                    <div class="ui big statistic">
+                                        <div class="value" id="OngCount">
+                                            3
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="extra content">
+                                    <div class="ui two buttons">
+                                        <a class="ui violet button" href="#">Ongoing Test</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="four wide computer eight wide tablet sixteen wide mobile column">
+                            <div class="ui fluid card bgSVG">
+                                <div class="content" style="text-align:center">
+                                    <div class="ui big statistic">
+                                        <div class="value" id="ComCount">
+                                            4
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="extra content">
+                                    <div class="ui two buttons">
+                                        <a class="ui violet button" href="#">Completed Test</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            <div id="DivTempTable1" class="ui segment violet" >
+                <div id="TextContainer" >
+                    <div id="realText" style="font-size: 20rem;color: transparent;">
+                        PKT
+                    </div>
+                </div>
+
+            </div>
+
+            
+    </div>
+
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+</div>
+</div>
+
+
+                        <script>
+
+
+    getTestsReports();
+
+
+
+    function getTestsReports( ) {
+
+          $('#TempTable1').DataTable().destroy();
+
+        $.ajax({
+            url: '@Url.Action("Get_Reports", "Reports")',
+            type: "POST",
+            data: { ReportId: 6 },
+            success: function (result) {
+
+                if (result != null) {
+                    if (result != undefined && result.status == "success") {
+
+                        if (Object(result).length === 0) {
+                            $.notify("No Records Found", "error");
+                            $('.spinner').css('display', 'block').fadeOut();
+                            return;
+                        }
+
+  
+                        $("#DivTempTable1").empty();
+
+                        var Records = `<div class="ui animated fade basic button" tabindex="0" style="width: 75%;border: none !important;box-shadow: none !important;">
+                                <div class="visible content"> <i class="history violet icon"></i></div>
+                                        <div class="hidden content" class="ui basic icon fluid button" id="{{td}}" onclick="getTestsHistoryReports(this.id)">
+                                  View History
+                                        </div>
+                                        </div>`;
+
+                        DynamicTable.renderTable({
+                            jsonData: result.data.data1,
+                            targetElementId: 'DivTempTable1',
+                            tableClasses: ["ui", "table", "unstackable", "striped"],
+                            columnModifiers: [
+                                ["1", Records]
+                            ]
+                        });
+                      
+                        $('#NYSCount').html(result.data.data2[0].NYS);
+                        $('#NYUCount').html(result.data.data2[0].NYU);
+                        $('#OngCount').html(result.data.data2[0].ONG);
+                        $('#ComCount').html(result.data.data2[0].COM);
+
+
+                       // $('#TempTable1').DataTable();
+                        if (result.status == "success") {
+                            $.notify("Records Available", "success");
+                        } else {
+                            $.notify(result.msg, "success");
+                        }
+
+                        return;
+
+                    } else {
+                        $.notify(result.msg, "error");
+                        $('.spinner').css('display', 'block').fadeOut();
+                        return;
+                    }
+                } else if (result.status == "error") {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify(result.mod.msg, "error");
+                    return;
+                } else {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify("Something went wrong", "error");
+                    return;
+                }
+            }, failure: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+
+                $.notify(result.responseText, "error");
+                return;
+            },
+            error: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+
+                $.notify(result.responseText, "error");
+                return;
+            }
+        });
+    }
+                       
+                    
+
+
+    $(document).ready(function () {
+        // Hide original content
+        $('#actualContent').hide();
+
+ 
+        $('#placeholderGrid').show();
+        setTimeout(function () {
+            $('#placeholderGrid').hide();
+            $('#actualContent').fadeIn();
+        }, 500);  
+    });
+
+
+    $(document).ready(function () {
+ 
+        $('#actualContentSegment').hide();
+ 
+        $('#placeholderSegment').show();
+        setTimeout(function () {
+            $('#placeholderSegment').hide();
+            $('#actualContentSegment').fadeIn();
+        }, 500);  
+    });
+
+
+
+
+    function getTestsHistoryReports(element) {
+         
+        var CostId = element;
+
+
+        $.ajax({
+            url: '@Url.Action("Get_Reports", "Reports")',
+            type: "POST",
+            data: { ReportId: 2, CostId: CostId },
+            success: function (result) {
+
+                if (result != null) {
+                    if (result != undefined && result.status == "success") {
+
+                        if (Object(result).length === 0) {
+                            $.notify("No Records Found", "error");
+                            $('.spinner').css('display', 'block').fadeOut();
+                            return;
+                        }
+
+                        var Attended_Active_Percentage = ` <div class="" >{{td}}%</div>`;
+
+                        $('#TempTable2').DataTable().destroy();
+
+                        DynamicTable.renderTable({
+                            jsonData: result.data.data1,
+                            targetElementId: 'DivTempTable2',
+                            tableClasses: ["ui", "violet", "table", "unstackable", "striped"],
+                            columnModifiers: [
+                                ["10", Attended_Active_Percentage]
+                            ]
+                        });
+ 
+
+                        if (result.status == "success") {
+                            $.notify("Records Available", "success");
+                        } else {
+                            $.notify(result.msg, "success");
+                        }
+
+                        $('#TestHistoryModal').modal('show');
+                        return;
+
+                    } else {
+                        $.notify(result.msg, "error");
+                        $('.spinner').css('display', 'block').fadeOut();
+                        return;
+                    }
+                } else if (result.status == "error") {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify(result.mod.msg, "error");
+                    return;
+                } else {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify("Something went wrong", "error");
+                    return;
+                }
+            }, failure: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+
+                $.notify(result.responseText, "error");
+                return;
+            },
+            error: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+
+                $.notify(result.responseText, "error");
+                return;
+            }
+        });
+    }
+</script>

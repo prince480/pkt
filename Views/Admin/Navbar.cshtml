@@ -1,0 +1,897 @@
+﻿@{
+    ViewData["Title"] = "Navbar";
+    Layout = "_Layout";
+}
+
+
+<link href="~/iconpack/icon.css" rel="stylesheet" />
+<link href="~/iconpack/icon.min.css" rel="stylesheet" />
+<script src="~/iconpack/package.js"></script>
+
+
+
+ <style>
+
+
+     .newlyAddedListItem {
+    animation: highlight 1s ease;
+}
+
+@@keyframes highlight {
+    0% {
+        background-color: transparent; /* Start with a transparent background */
+    }
+    100% {
+        background-color: #7bd77b; /* End with a green background */
+    }
+}
+
+
+     .scrolling.undetached.dimmable .ui.scrolling.modal {
+
+    left: 0% !important;
+ 
+}
+
+
+    #TempTable1 td, #TempTable1 th,
+    #TempTable2 td, #TempTable2 th{
+        padding: 5px !important;
+        font-size: 12.5px;
+    }
+
+
+    /* Style for list boxes */
+    .list-box {
+ 
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      overflow-y: auto;
+      margin: 10px;
+    }
+
+    /* Style for list items */
+    .list-item {
+      cursor: pointer;
+      margin: 5px 0;
+      padding: 8px;
+      background-color: #f4f4f4;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+
+ </style>
+<div class="ui container">
+    <a class="ui violet ribbon label huge">
+        <h3 class="ui center aligned header " style="color: white;">Access</h3>
+    </a>
+
+    <div class="ui top attached tabular menu">
+        <a class="item active" data-tab="first">Menu Access</a>
+        <a class="item" data-tab="second">User Access</a>
+        <a class="item" data-tab="third">Cost Assigning Access</a>
+    </div>
+    <div class="ui bottom attached tab segment active" data-tab="first">
+
+        <table id="TempTable1" class="ui celled table violet">
+            <thead id="TableHead1" class="center aligned">
+                <tr>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="TableBody1" class="center aligned">
+                <tr>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="ui bottom attached tab segment" data-tab="second">
+        <div class="ui form segment violet large">
+
+            <div class="four fields">
+                <div class="field">
+                    <label>EmpCode</label>
+                    <input class="ui " id="EmpCode" type="number" placeholder="Enter the EmpCode and press Tab Key!">
+
+
+                </div>
+
+                <div class="field">
+                    <label> .</label>
+                    <div class="ui ">
+                        <label class="ui label large" id="UserName">  </label>
+                    </div>
+                </div>
+
+
+                <div class="field">
+                    <label>Access</label>
+                    <select class="" id="PrevilegeDropdown">
+                        <option value="0"> -- Please Select --</option>
+                        @foreach (var accessItem in ViewBag.AccessList)
+                        {
+                                <option value="@accessItem.Code">@accessItem.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label> .</label>
+                    <div class="ui multiple ">
+                        <button class="ui violet button" id="startTest" onclick="Update_UserPrivilege()">Update</button>
+                    </div>
+
+
+                </div>
+            </div>
+
+
+            <div id="DivTempTable2" style="overflow: auto; "></div>
+
+        </div>
+    </div>
+      <div class="ui fullscreen modal" id="CostAssignModal" >
+           <div style="
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 5px; 
+    margin-bottom: -15px;
+">
+          <button class="ui green button" id="updateUserCostNameSaveAndCloseButton" >Save and Close </button>
+            <button class="ui red button" onclick="$('#CostAssignModal').modal('hide');"  > Close </button>
+
+           </div>
+        <div class="headers"   > 
+            <div id="DivTempTable4" style="overflow: auto; "></div> 
+
+        </div>
+        <div class="content" style="padding: 1px !important; ">
+
+            <div class="two fields" style="display: flex;flex-direction: row; height: 1000px;">
+         <div class="field" style="width: 50%; height: 50%;">
+         <div id="CostNameListBox"   class="list-box" style="height: 100%; ">  </div>
+            </div> 
+            <div class="field" style="width: 50%; height: 50%;">
+               <div id="NewCostNameListBox"  class="list-box" style="height: 100%; " >  </div>
+            </div>
+</div>
+
+        </div>
+    </div>
+
+
+    <div class="ui bottom attached tab segment" data-tab="third">
+        <div class="ui form segment violet large">
+
+
+            <div class="three fields">
+                <div class="field">
+                    <label>EmpCode</label>
+                    <input class="ui " id="CA_EmpCode" type="number" placeholder="Enter the EmpCode and press Tab Key!">
+
+
+                </div>
+
+                <div class="field">
+                    <label> .</label>
+                    <div class="ui ">
+                        <label class="ui label large" id="CA_UserName">  </label>
+                    </div>
+                </div>
+
+          
+            <div class="field">
+                  <label>Cost Names </label>
+                    <div class="ui multiple dropdown" id="CostNameDropdown">
+                        <input type="hidden" name="filters">
+                        <i class="filter icon"></i>
+                        <span class="text">- Select Cost Names -</span>
+                        <div class="menu">
+                            <div class="ui icon search input">
+                                <i class="search icon"></i>
+                                <input type="text" placeholder="Search tags...">
+                            </div>
+                            <div class="divider"></div>
+
+                            <div class="scrolling menu" id="dropdownMenu">
+
+                            </div>
+                        </div>
+                    </div>
+            </div>
+           
+              <div class="field">
+                <label> .</label>
+                <div class="ui multiple ">
+                    <button class="ui violet button" id="updateUserCostName" >Update</button>
+                    <button class="ui red button" id="clearUserCostName" onclick="Clear_UserCostName()">Clear</button>
+                </div>
+
+
+            </div>
+ 
+            </div>
+            <div id="DivTempTable3" style="overflow: auto; "></div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="ui modal" id="myModal">
+    <i class="close icon"></i>
+    <div class="header">
+        Privilege
+    </div>
+    <div class="content">
+
+        <div class="ui input">
+            <input type="hidden" id="AccessId">
+        </div> 
+
+
+        <div class="ui fluid multiple search selection dropdown" id="AccessListDropdown">
+            <input type="hidden" name="country">
+            <i class="dropdown icon"></i>
+            <div class="default text">Add Previlleges </div>
+            <div class="menu">
+                @foreach (var accessItem in ViewBag.AccessList)
+                {
+                        <div class="item" data-value="@accessItem.Code">@accessItem.Name</div>
+                }
+            </div>
+        </div>
+
+    </div>
+    <div class="actions">
+        <div class="ui negative button">
+            Cancel
+        </div>
+        <div class="ui positive button" id="UpdateList">
+            OK
+        </div>
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+
+
+
+    $(document).ready(function () {
+
+       $('.menu .item').tab();
+
+        var selectedValues;
+
+        $('.ui.dropdown').on('change', function () {
+
+            selectedValues = $(this).dropdown('get value'); 
+        });
+
+        $('#UpdateList').on('click', function () {
+
+            var AccessId = $('#AccessId').val();
+            var Criteria = "PKT_Update_AccessList";
+
+            $.ajax({
+                url: '@Url.Action("Update_AccessList", "Admin")',
+                type: "POST",
+                data: { Criteria: Criteria, AccessId: AccessId, selectedValues: selectedValues },
+                success: function (result) {
+
+                    if (result.mod.status == "success") {
+                        getReports();
+                    } else {
+
+                        $.notify(result.message, "error");
+
+                    }
+
+                }
+            });
+        });
+    });
+
+    $(document).ready(function () {
+
+        $('#myModal').modal({
+            detachable: false,  
+            closable: false,   
+            onApprove: function () {
+
+            }
+        });
+
+
+        $(document).on('click', '.btnEdit', function () {
+            $('#AccessListDropdown').dropdown('clear');
+
+            var btnEditId = $(this).attr('id');
+            var fourthColumnValues = $(this).closest('tr').find('td:eq(5)').text().split(',');
+
+
+            fourthColumnValues.forEach(function (value) {
+                $('#AccessListDropdown').dropdown('set selected', value.trim());
+            });
+
+            $('#AccessId').val(btnEditId);
+            $('#myModal').modal('show');
+
+            $('.ui.dropdown').dropdown(); 
+        });
+
+    });
+
+
+
+    setTimeout(function () {
+        getReports();
+    }, 500);
+
+    function Update_ActiveStatus(buttonElement) {
+
+        var row = buttonElement.closest('tr');
+        var firstColumnId = row.querySelector('td:first-child i').id;
+
+
+        var HTMLTag = buttonElement.parentNode.parentNode.cells[4];
+        var HTMLTagValue = buttonElement.parentNode.parentNode.cells[4].textContent;
+
+        HTMLTagValue = HTMLTagValue.trim();
+
+        $.ajax({
+            url: '@Url.Action("Update_Active", "Admin")',
+            type: "POST",
+            data: { Id: firstColumnId, Criteria: "PKT_Update_Active", Condition1:"" },
+            success: function (result) {
+
+                    if (HTMLTagValue == "ACTIVE") {
+                    HTMLTag.innerHTML = "<a onclick=' Update_ActiveStatus(this)' class='ui red label tiny'>INACTIVE</a>";
+                    }else{
+                    HTMLTag.innerHTML = "<a onclick=' Update_ActiveStatus(this)' class='ui green label tiny'>ACTIVE</a>";
+                    }
+
+            }
+
+        });
+    }
+
+
+
+
+
+
+
+    function Update_UserPrivilege() {
+
+        var EmpCode = $("#EmpCode").val();
+        var Privilege = $("#PrevilegeDropdown").val();
+
+
+        if (Privilege == 0) {
+            $.notify("Please select the Access", "error");
+            $("#PrevilegeDropdown").focus();
+            return;
+        }
+
+        $.ajax({
+            url: '@Url.Action("Update_Active", "Admin")',
+            type: "POST",
+            data: { Criteria: "PKT_Update_UserPrivilege", Id: EmpCode, Condition1: Privilege },
+            success: function (result) {
+
+            $("#EmpCode").val('');
+                $("#UserName").text('');
+
+                $.notify("Updated", "success");
+
+                getTestsReports("PKT_UserPrevilegeRecords", 'DivTempTable2',"");
+
+            }
+
+        });
+    }
+
+
+
+
+
+    function getReports() {
+
+        $('#TableHead1').html('');
+        $('#TableBody1').html('');
+
+        $.ajax({
+            url: '@Url.Action("Get_NavbarReport", "Admin")',
+            type: "POST",
+            data: null,
+            success: function (result) {
+
+                if (result != null) {
+                    if (result != undefined && result.mod.status == "success") {
+
+                        if (Object(result).length === 0) {
+                            snackBar("waring", "No Records Found", "✔", 5000, "0.5s", "tr");
+                            $('.spinner').css('display', 'block').fadeOut();
+                            return;
+                        }
+
+                        var SetHead = $("#TableHead1");
+                        var tableRow = "<tr class='text-center '> ";
+
+                        for (var i = 0; i < Object.keys(result.rows[0]).length; i++) {
+                            var headerData = "<th>" + Object.keys(result.rows[0])[i] + "</th>";
+                            tableRow += headerData;
+                        }
+
+                        tableRow += "</tr>";
+                        SetHead.append(tableRow);
+
+                        var SetBody = $("#TableBody1");
+                        var RowData = " ";
+                        for (var k = 0; k < Object(result.rows).length; k++) {
+                            RowData += "<tr class='text-center '> ";
+                            for (var j = 0; j < Object.keys(result.rows[0]).length; j++) {
+                                var NullRemovedData = '';
+                                if (Object.values(result.rows[k])[j] === null) {
+                                    NullRemovedData = '';
+                                } else {
+                                    NullRemovedData = Object.values(result.rows[k])[j];
+                                }
+
+                                if (j == 0) {   
+                                    RowData += "<td NOWRAP > <i id=" + NullRemovedData + "  class='violet large btnEdit pen square icon'></i></td>";
+                                }  else if (j == 4 && NullRemovedData == "ACTIVE") {
+                                    RowData += "<td NOWRAP  > <a onclick=' Update_ActiveStatus(this)' class='ui green label tiny' id=" + NullRemovedData + "  >" + NullRemovedData + "</a> </td>";
+                                } else if (j == 4 && NullRemovedData == "INACTIVE") {
+                                    RowData += "<td NOWRAP > <a onclick=' Update_ActiveStatus(this)' class='ui red label tiny' id=" + NullRemovedData + "  >" + NullRemovedData + "</a> </td>";
+                                } else if (j == 5 && NullRemovedData == "[object Object]") {
+                                    RowData += "<td NOWRAP >  </td>";
+                                } else {
+                                    RowData += "<td NOWRAP>" + NullRemovedData + "</td>";
+                                }
+                            }
+                            RowData += "</tr>";
+                        }
+                        SetBody.append(RowData);
+                        $.notify(result.mod.msg, "error");
+                        $('.spinner').css('display', 'block').fadeOut();
+                        return;
+
+                    } else {
+                        $.notify(result.mod.msg, "error"); 
+                        $('.spinner').css('display', 'block').fadeOut();
+                        return;
+                    }
+                } else if (result.mod.status == "error") {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify(result.mod.msg, "error");
+                    return;
+                } else {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify("Something went wrong", "error"); 
+                    return;
+                }
+            }, failure: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+                $.notify(result.responseText, "error");
+                return;
+            },
+            error: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+                $.notify(result.responseText, "error");
+                return;
+            }
+        });
+    }
+
+
+
+    $("#EmpCode").on("blur", function () {
+        CRM_CheckUserDetails(this.value, "#UserName");
+
+    });
+
+    $("#CA_EmpCode").on("blur", function () {
+         CRM_CheckUserDetails(this.value,"#CA_UserName");
+      //  getTestsReports("PKT_CostIds_AssignedUserDetails", 'DivTempTable4');
+          $('#CostNameDropdown').dropdown();
+        //   $('#CostAssignModal').modal('show');
+
+    });
+
+    function userCostDetails(Id){
+
+           getTestsReports("PKT_CostIds_AssignedUserDetails", 'DivTempTable4',Id);
+        $('#CostAssignModal').modal('show');
+    }
+
+
+
+
+    function CRM_CheckUserDetails(Id,Element) {
+
+        var Login = {
+            userId: Id 
+        };
+
+        if (Login.userId == null || Login.userId == '' || Login.userId.length == 0) {
+            $('.spinner').css('display', 'block').fadeOut(500);
+            $("#userId").focus();
+            return;
+        }
+
+
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("CheckUserDetails", "SignIn")",
+            data: JSON.stringify(Login),
+            contentType: "application/json; charset:utf-8",
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    $(Element).text(response.rows[0].USERNAME);
+                } else {
+                    $(Element).text('');
+                }
+            }
+        });
+    }
+
+
+    getTestsReports("PKT_UserPrevilegeRecords", 'DivTempTable2',"");
+    getTestsReports("PKT_CostIds_AssignedUsers", 'DivTempTable3',"");
+
+
+    function getTestsReports(criteria, div, id="") {
+
+
+            if (criteria == "PKT_CostIds_AssignedUserDetails" && id == "") {
+            id = $('#CA_EmpCode').val()
+        }  
+
+        $.ajax({
+            url: '@Url.Action("Get_Reports", "Questioner")',
+            type: "POST",
+            data: { Criteria: criteria, Id:id },
+            success: function (result) {
+
+                if (result != null) {
+                    if (result != undefined && result.status == "success") {
+
+                        if (Object(result).length === 0) {
+                            $.notify("No Records Found", "error"); 
+                            $('.spinner').css('display', 'block').fadeOut();
+                            return;
+                        }
+
+
+                        if (criteria == "PKT_UserPrevilegeRecords") {
+
+                            var Edit = `<button class='ui icon label' title="Click to View Questions" onclick="Get_Question('{{td}}')" >  {{td}}</button>`;
+                            DynamicTable.renderTable({
+                                jsonData: result.data,
+                                targetElementId: div,
+                                tableClasses: ["ui", "selectable", "table", "striped"],
+                                columnModifiers: [
+                                    ["1", Edit]
+                                ]
+                            });
+
+                            // if ($('#TempTable2')) {
+                            //     $('#TempTable2').DataTable().destroy();
+                            //     $('#TempTable2').DataTable({
+                            //         "lengthMenu": [5, 10, 100],
+                            //         "searching": true,
+                            //         "ordering": true
+                            //     });
+                            // }
+
+                            //$('#TempTable2').DataTable().destroy();
+
+                            
+
+                        } else if (criteria == "PKT_CostIds_AssignedUsers") {
+
+                            var UserId = `<button class='ui icon label' title="Click to View Questions" onclick="userCostDetails('{{td}}')" >  {{td}}</button>`;
+
+                            DynamicTable.renderTable({
+                                jsonData: result.data,
+                                targetElementId: div,
+                                tableClasses: ["ui", "selectable", "table", "striped"],
+                                columnModifiers: [
+                                      ["1", UserId]
+                                ]
+                            });
+
+                            //addLineBreaksToColumn("TempTable4", 1);
+
+                        } else if (criteria == "PKT_CostIds_AssignedUserDetails") {
+
+                            //  DynamicTable.renderTable({
+                            //     jsonData: result.data,
+                            //     targetElementId: div,
+                            //     tableClasses: ["ui", "selectable", "table", "striped"],
+                            //     columnModifiers: [
+
+                            //     ]
+                            // });
+
+                            var AvailableItems = result.data[0].AssignedProcess;
+                            var AvailableUserId = result.data[0].UserId;
+                           var itemsArray = AvailableItems.split(',');
+                             DirectMoveItem(itemsArray);
+
+                             $('#CA_EmpCode').val(AvailableUserId);
+
+                        }
+                        else {
+
+
+
+                            DynamicTable.renderTable({
+                                jsonData: result.data,
+                                targetElementId: div,
+                                tableClasses: ["ui", "selectable", "table", "striped"],
+                                columnModifiers: [
+
+                                ]
+                            });
+                        }
+
+
+                        if (result.status == "success") {
+                            $.notify(" Records Available", "success");
+                        } else {
+                            $.notify(result.msg, "success");
+                        }
+
+                        return;
+
+                    } else {
+                        $.notify(result.msg, "error");
+                        $('.spinner').css('display', 'block').fadeOut();
+                        return;
+                    }
+                } else if (result.status == "error") {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify(result.mod.msg, "error");
+                    return;
+                } else {
+                    $('.spinner').css('display', 'block').fadeOut();
+                    $.notify("Something went wrong", "error");
+                    return;
+                }
+            }, failure: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+
+                $.notify(result.responseText, "error");
+                return;
+            },
+            error: function (result) {
+                $('.spinner').css('display', 'block').fadeOut();
+
+                $.notify(result.responseText, "error");
+                return;
+            }
+        });
+    }
+
+    CostCodeList();
+
+    function CostCodeList() {
+        Get_Dropdowns(function (data) {
+            var dropdownMenu = $("#dropdownMenu");
+            dropdownMenu.empty();
+
+
+            if (data.length > 0) {
+                $.each(data, function (index, item) {
+                    dropdownMenu.append(
+                        $('<div class="item" data-value="' + item.CODE + '"></div>').text(item.NAME)
+                    );
+                });
+            }
+
+            $('.ui.dropdown').dropdown();
+
+        }, "PKT_OverallCostName", 0);
+    }
+
+    function Get_Dropdowns(callback, Criteria, Id) {
+        $.ajax({
+            url: "@Url.Action("get_dropdown_list", "Upload")",
+            type: 'GET',
+            dataType: 'json',
+            data: { Id: Id, Criteria: Criteria },
+            success: function (data) {
+                callback(data.Table);
+            },
+            error: function () {
+                $.notify("Error fetching data", "error");
+            }
+        });
+    }
+
+
+    function addLineBreaksToColumn(tableId, columnIndex) {
+        const table = document.getElementById(tableId);
+        if (table) {
+            const rows = table.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                if (cells.length > columnIndex) {
+                    const content = cells[columnIndex].innerHTML;
+                    const modifiedContent = content.split('|').join('<br>');
+                    cells[columnIndex].innerHTML = modifiedContent;
+                }
+            }
+        }
+    }
+
+    function Clear_UserCostName(){
+        $('#CA_EmpCode').val('')
+          getTestsReports("PKT_CostIds_AssignedUsers", 'DivTempTable3');
+    }
+
+
+
+</script>
+
+<script>
+
+
+$(document).ready(function () {
+
+    $('#CostNameDropdown').dropdown();
+    var selectedCostNameValues;
+
+    $('#CostNameDropdown').on('change', function () {
+            selectedCostNameValues = $(this).dropdown('get value'); 
+        });
+
+    $('#updateUserCostName').on('click', function () {
+
+        var AccessId = $('#CA_EmpCode').val();
+        var Criterias = "PKT_CostIds_Assigning";
+
+
+        $.ajax({
+            url: '@Url.Action("Update_AccessList", "Admin")',
+            type: "POST",
+            data: {Criteria: Criterias, AccessId: AccessId, selectedValues: selectedCostNameValues },
+            success: function (result) {
+                if (result.mod.status == "success") {
+                    getTestsReports("PKT_CostIds_AssignedUsers", 'DivTempTable3');
+                    $('#CA_EmpCode').val('');
+                     $('#CostNameDropdown').dropdown('clear');
+                } else {
+                    $.notify(result.message, "error");
+                }
+            }
+        });
+    });
+});
+
+        </script>
+
+
+            <script>
+                   CostCodeBoxList();
+
+    function CostCodeBoxList() {
+      Get_Dropdowns(function (data) {
+        var CostNameListBox = $("#CostNameListBox");
+
+        if (data.length > 0) {
+          $.each(data, function (index, item) {
+            var listItem = $("<div class='list-item'></div>")
+              .text(item.NAME)
+              .attr("data-value", item.CODE)
+              .click(function () { moveItem(this, 'NewCostNameListBox'); });
+
+            CostNameListBox.append(listItem);
+          });
+        }
+      }, "PKT_OverallCostName", 0);
+    }
+
+
+    function moveItem(item, targetBoxId) {
+  var itemText = $(item).text();
+  var itemValue = $(item).attr("data-value");
+
+  var targetBox = $("#" + targetBoxId);
+
+  var itemExists = targetBox.find(".list-item:contains('" + itemText + "')").length > 0;
+
+  if (!itemExists) {
+    var newItem = $("<div class='list-item newlyAddedListItem'></div>")
+      .text(itemText)
+      .attr("data-value", itemValue)
+      .click(function () { moveItem(this, 'CostNameListBox'); });
+
+    targetBox.prepend(newItem);
+
+    $(item).remove();
+  } else {
+    var sourceBox = $("#" + targetBoxId);
+    newItem = $("<div class='list-item'></div>")
+      .text(itemText)
+      .attr("data-value", itemValue)
+      .click(function () { moveItem(this, 'NewCostNameListBox'); });
+
+    sourceBox.prepend(newItem);
+    $(item).remove();
+  }
+}
+
+
+function DirectMoveItem(AvailableItems) {
+  var CostNameListBox = $("#CostNameListBox");
+  var NewCostNameListBox = $("#NewCostNameListBox");
+
+  // Move items from NewCostNameListBox back to CostNameListBox
+  NewCostNameListBox.find(".list-item").each(function () {
+    moveItem(this, 'CostNameListBox');
+  });
+
+  // Move items specified in AvailableItems to NewCostNameListBox
+  AvailableItems.forEach(function (itemValue) {
+    var item = CostNameListBox.find(".list-item[data-value='" + itemValue + "']");
+    if (item.length > 0) {
+      moveItem(item, 'NewCostNameListBox');
+    }
+  });
+}
+
+
+
+</script>
+
+
+
+    <script>
+
+
+$(document).ready(function () {
+
+    $('#updateUserCostNameSaveAndCloseButton').on('click', function () {
+
+        var AccessId = $('#CA_EmpCode').val();
+        var Criterias = "PKT_CostIds_Assigning";
+
+        var selectedCostNameValuesSaveAndCloseButton = $("#NewCostNameListBox .list-item").map(function() {
+        return $(this).data("value");
+        }).get().join(",");
+
+
+
+        $.ajax({
+            url: '@Url.Action("Update_AccessList", "Admin")',
+            type: "POST",
+            data: {Criteria: Criterias, AccessId: AccessId, selectedValues: selectedCostNameValuesSaveAndCloseButton },
+            success: function (result) {
+                if (result.mod.status == "success") {
+                    getTestsReports("PKT_CostIds_AssignedUsers", 'DivTempTable3');
+                    $('#CA_EmpCode').val('');
+                     $('#CostAssignModal').modal('hide');
+                } else {
+                    $.notify(result.message, "error");
+                }
+            }
+        });
+    });
+});
+
+        </script>
