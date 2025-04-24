@@ -9,7 +9,7 @@ namespace PKT.Controllers
     public class AdminController : Controller
     {
         private readonly DBContext _DBContext;
-        General _mod = new General();
+        //General _mod = new General();
         List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
 
         public AdminController( DBContext DBContext)

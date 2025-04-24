@@ -38,7 +38,12 @@ namespace PKT.Controllers
 
             if (result.Tables[0].Rows.Count > 0)
             {
-                if (result.Tables[0].Rows[0]["MSG"].ToString().ToUpper().Equals("SUCCESS"))
+                //if (result.Tables[0].Rows[0]["MSG"].ToString().ToUpper().Equals("SUCCESS"))
+                if (result != null &&
+                        result.Tables.Count > 0 &&
+                        result.Tables[0].Rows.Count > 0 &&
+                        result.Tables[0].Rows[0]["MSG"] != DBNull.Value &&
+                        result.Tables[0].Rows[0]["MSG"]?.ToString()?.ToUpper() == "SUCCESS")
                 {
 
                     HttpContext.Session.SetString("userId", result.Tables[0].Rows[0]["empCode"].ToString());
