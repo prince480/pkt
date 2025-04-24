@@ -8,15 +8,15 @@ namespace PKT.Models
 {
     public class Reports
     {
-        public string status { get; set; }
+        public string? status { get; set; }
         public string msg { get; set; }
-        public string responsecode { get; set; }
+        public string? responsecode { get; set; }
 
-        public string ProcessCodes { get; set; }
+        public string? ProcessCodes { get; set; }
 
-        public string PKTName { get; set; }
-        public string fromDate { get; set; }
-        public string toDate { get; set; }
+        public string? PKTName { get; set; }
+        public string? fromDate { get; set; }
+        public string? toDate { get; set; }
 
 
     }
