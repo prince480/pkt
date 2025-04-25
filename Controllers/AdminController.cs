@@ -9,7 +9,7 @@ namespace PKT.Controllers
     public class AdminController : Controller
     {
         private readonly DBContext _DBContext;
-        //General _mod = new General();
+        
         List<Dictionary<string, object>> rows = new List<Dictionary<string, object>>();
 
         public AdminController( DBContext DBContext)
@@ -86,7 +86,7 @@ namespace PKT.Controllers
                     mod = new { Status = "", Message = "" }
                 };
 
-                if (result.Tables[0].Rows[0]["MSG"].ToString().ToUpper().Equals("UPDATED"))
+                if (result != null && result.Tables[0].Rows[0]["MSG"].ToString().ToUpper().Equals("UPDATED"))
                 {
                       response = new
                     {
