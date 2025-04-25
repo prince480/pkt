@@ -86,7 +86,7 @@ namespace PKT.Controllers
                     mod = new { Status = "", Message = "" }
                 };
 
-                if (result.Tables[0].Rows[0]["MSG"].ToString().ToUpper().Equals("UPDATED"))
+                if (result != null && result.Tables[0].Rows[0]["MSG"].ToString().ToUpper().Equals("UPDATED"))
                 {
                       response = new
                     {
